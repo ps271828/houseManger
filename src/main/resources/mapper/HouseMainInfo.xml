@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.houses.dao.IHouseMainInfoDao">
+
+    <sql id="allProp">
+        id             id,
+        project_name   projectName,
+        house_number   houseNum,
+        check_date     checkDate,
+        master_name    masterName
+    </sql>
+
+    <select id="selectHouseMainInfoById" resultType="com.houses.common.model.HouseMainInfo" parameterType="java.lang.Integer">
+        SELECT <include refid="allProp" />  FROM house_main_info
+        where id = #{id}
+    </select>
+</mapper>

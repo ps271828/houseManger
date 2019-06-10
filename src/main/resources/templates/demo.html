@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../static/js/layui/css/layui.css" />
+	</head>
+
+	<script type="text/javascript" src="../static/js/jquery-3.3.1.js"></script>
+	<script type="text/javascript" src="../static/js/layui/layui.js"></script>
+	<script type="text/javascript" src="../static/js/project/houseManger/demo.js"></script>
+
+	<body>
+		<div>
+			<div id="head"></div>
+			<div id="body">
+				<div id="projectMainInfio" class="layui-container">
+					<div class="layui-row">
+						<div class="layui-col-md2">
+							<div style="width: 30%; display: inline-block;">工程名称</div>
+						</div>
+
+						<div class="layui-col-md4">
+							<div style="display: inline-block;width: 90%"><input style="width: 100%;" placeholder="请输入工程名称" /></div>
+						</div>
+
+						<div class="layui-col-md2">
+							<div style="width: 30%;display: inline-block;vertical-align: top;">门牌号</div>
+						</div>
+
+						<div class="layui-col-md4">
+							<div style="display: inline-block;width: 100%">
+								<div>
+									<select style="display: inline-block;width: 32%;">
+										<option>1</option>
+										<option>1</option>
+										<option>1</option>
+									</select>
+									<select style="display: inline-block;width: 32%;;">
+										<option>1</option>
+										<option>1</option>
+										<option>1</option>
+									</select>
+									<select style="display: inline-block;width: 32%;;">
+										<option>1</option>
+										<option>1</option>
+										<option>1</option>
+									</select>
+								</div>
+								<div style="margin-top: 10px;">
+									<textarea style="width: 97.5%;height: 50px;"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="layui-row" style="margin-top: 10px;">
+						<div class="layui-col-md2">
+							<div style="width: 30%; display: inline-block;">检测日期</div>
+						</div>
+						<div class="layui-col-md4">
+							<div style="display: inline-block;width: 90%"><input style="width: 100%;" placeholder="请输入工程名称" /></div>
+						</div>
+						<div class="layui-col-md2">
+							<div style="width: 30%;display: inline-block;vertical-align: top;">户主姓名</div>
+						</div>
+						<div class="layui-col-md4">
+							<div style="display: inline-block;width: 100%"><input style="width: 100%;" placeholder="请输入工程名称" /></div>
+						</div>
+					</div>
+				</div>
+				<div id="projectItemInfo" class="layui-container" style="margin-top: 20px;">
+					<div id="item0" class="layui-row">
+						<input type="hidden" value="0" />
+						<div class="layui-row">
+							<div class="layui-col-md2">
+								构件位置
+							</div>
+							<div class="layui-col-md10">
+								<input type="radio" name="itemLocation0" value="0">墙面
+								<input type="radio" name="itemLocation0" value="1">天棚
+								<input type="radio" name="itemLocation0" value="2">地面
+							</div>
+						</div>
+						<div class="layui-row">
+							<div class="layui-col-md2">
+								裂缝性质
+							</div>
+							<div class="layui-col-md10">
+								<input type="radio" name="crackType0" value="0">装饰面层
+								<input type="radio" name="crackType0" value="1">构建
+							</div>
+						</div>
+						<div class="layui-row">
+							<div class="layui-col-md2">
+								墙面
+							</div>
+							<div class="layui-col-md10">
+								<input type="radio" name="wallDamageType0" value="0">龟裂
+								<input type="radio" name="wallDamageType0" value="1">空鼓
+							</div>
+						</div>
+						<div class="layui-row">
+							<div class="layui-col-md2">
+								裂缝方向
+							</div>
+							<div class="layui-col-md10">
+								<input type="checkbox" name="crackDirection0" value="0">斜
+								<input type="checkbox" name="crackDirection0" value="1">竖
+								<input type="checkbox" name="crackDirection0" value="3">水
+								<input type="checkbox" name="crackDirection0" value="4">不规则
+							</div>
+						</div>
+						<div class="layui-row">
+							<div class="layui-col-md2">
+								最大宽度mm
+							</div>
+							<div class="layui-col-md10">
+								<input id="maxLength0" style="width: 100%;" />
+							</div>
+						</div>
+						<div class="layui-row">
+							<div class="layui-col-md2">
+								示意图
+							</div>
+							<div class="layui-col-md10">
+								<div style="border: #C2C2C2 1px solid;width: 100%;color: #C2C2C2;">
+									<div id="uploadImage0" style="display: inline-block;text-align: center;border: #C2C2C2 1px solid;margin-top: 5px;margin-bottom: 5px;">
+										<i class="layui-icon layui-icon-add-circle-fine" style="font-size: 80px;"></i><br />
+										添加图片
+									</div>
+									<div id="preview0" style="display: inline-block;vertical-align: top;margin-top: 5px;">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="layui-row">
+							<div class="layui-col-md2">
+								其他
+							</div>
+							<div class="layui-col-md10">
+								<input id="others0" style="width: 100%;" />
+							</div>
+						</div>
+						<div class="layui-row" style="margin-top: 20px;">
+							<div class="layui-col-md12" style="text-align: right">
+								<button onclick="deleteItem(0)">刪除此构件项</button>
+							</div>
+						</div>
+					</div>
+					<div class="layui-row" style="margin-top: 20px;">
+						<div class="layui-col-md12">
+							<button onclick="Add()">新增构件项</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
