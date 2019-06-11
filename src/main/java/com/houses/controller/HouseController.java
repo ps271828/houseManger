@@ -1,5 +1,6 @@
 package com.houses.controller;
 
+import com.houses.common.dto.PageDto;
 import com.houses.common.dto.ResultDto;
 import com.houses.common.model.HouseMainInfo;
 import com.houses.common.vo.HouseMainInfoVo;
@@ -14,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author:panshuang
@@ -37,6 +40,31 @@ public class HouseController {
     public String getHouseInfo(){
         //iHouseService.selectHouseMainInfoById(1);
         return "houseInfo/addHouseInfo.html";
+    }
+
+    @RequestMapping(value = "/index")
+    public String toMainPage(){
+        return "index.html";
+    }
+
+    @RequestMapping(value = "/showHouses")
+    public String showHouses(){
+        return "houseInfo/showHouses.html";
+    }
+
+    @RequestMapping(value = "/queryHouses")
+    @ResponseBody
+    public PageDto<List<HouseMainInfoVo>> queryHouses(HouseMainInfoVo houseMainInfoVo){
+        PageDto<List<HouseMainInfoVo>> pageDto;
+        try {
+            pageDto = iHouseService.queryHouses(houseMainInfoVo);
+        }catch (Exception e){
+            logger.error(e.getMessage());
+            pageDto = new PageDto<>();
+            pageDto.setCount(0);
+            pageDto.setData(new ArrayList<>());
+        }
+        return pageDto;
     }
 
     @RequestMapping(value = "/saveHouseInfo")

@@ -1,5 +1,6 @@
 package com.houses.common.model;
 
+import com.houses.common.BaseDao;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +9,7 @@ import lombok.Setter;
  * @Data:2019/6/9 13:01
  * @Description:
  */
-public class HouseMainInfo {
+public class HouseMainInfo extends BaseDao {
 
     /**
      * 主键

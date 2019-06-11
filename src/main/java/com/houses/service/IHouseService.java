@@ -1,5 +1,6 @@
 package com.houses.service;
 
+import com.houses.common.dto.PageDto;
 import com.houses.common.dto.ResultDto;
 import com.houses.common.model.HouseMainInfo;
 import com.houses.common.vo.HouseMainInfoVo;
@@ -22,4 +23,11 @@ public interface IHouseService {
      * @return
      */
     ResultDto<String> saveHouseInfo(HouseMainInfoVo houseMainInfoVo);
+
+    /**
+     * 分页查询房屋信息
+     * @param houseMainInfoVo
+     * @return
+     */
+    PageDto<List<HouseMainInfoVo>> queryHouses(HouseMainInfoVo houseMainInfoVo);
 }

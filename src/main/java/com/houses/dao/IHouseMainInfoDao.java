@@ -18,4 +18,17 @@ public interface IHouseMainInfoDao {
      * @param houseMainInfoVo
      */
     void saveHouseMainInfo(HouseMainInfoVo houseMainInfoVo);
+
+    /**
+     * 查询房屋总数
+     * @return
+     */
+    Integer queryHousesCount();
+
+    /**
+     * 分页查询房屋信息
+     * @param houseMainInfoVo
+     * @return
+     */
+    List<HouseMainInfoVo> queryHousesPaged(HouseMainInfoVo houseMainInfoVo);
 }

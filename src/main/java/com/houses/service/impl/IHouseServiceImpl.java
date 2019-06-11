@@ -1,5 +1,6 @@
 package com.houses.service.impl;
 
+import com.houses.common.dto.PageDto;
 import com.houses.common.dto.ResultDto;
 import com.houses.common.model.HouseMainInfo;
 import com.houses.common.vo.HouseItemVo;
@@ -93,5 +94,20 @@ public class IHouseServiceImpl implements IHouseService {
 
         resultDto.setResultData(ResultDto.SUCCESS, null, "保存成功！");
         return resultDto;
+    }
+
+    @Override
+    public PageDto<List<HouseMainInfoVo>> queryHouses(HouseMainInfoVo houseMainInfoVo) {
+        PageDto<List<HouseMainInfoVo>> pageDto = new PageDto<>();
+
+        Integer count = iHouseMainInfoDao.queryHousesCount();
+
+        houseMainInfoVo.setStart((houseMainInfoVo.getPage() - 1)*houseMainInfoVo.getLimit());
+
+        List<HouseMainInfoVo> houseMainInfoVoList = iHouseMainInfoDao.queryHousesPaged(houseMainInfoVo);
+
+        pageDto.setCount(count);
+        pageDto.setData(houseMainInfoVoList);
+        return pageDto;
     }
 }

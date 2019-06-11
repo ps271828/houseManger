@@ -1,5 +1,6 @@
 package com.houses.common.model;
 
+import com.houses.common.BaseDao;
 import lombok.Data;
 
 /**
@@ -7,7 +8,7 @@ import lombok.Data;
  * @Data:2019/6/9 23:16
  * @Description:
  */
-public class HouseItem {
+public class HouseItem extends BaseDao {
 
     private Integer id;
 

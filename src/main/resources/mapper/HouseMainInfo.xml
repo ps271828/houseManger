@@ -16,6 +16,15 @@
         where id = #{id}
     </select>
 
+    <select id="queryHousesCount" resultType="java.lang.Integer" >
+        SELECT count(*)  FROM house_main_info
+    </select>
+
+    <select id="queryHousesPaged" resultType="com.houses.common.vo.HouseMainInfoVo" >
+        SELECT <include refid="allProp" />  FROM house_main_info
+        limit #{start}, #{limit}
+    </select>
+
     <insert id="saveHouseMainInfo" parameterType="com.houses.common.vo.HouseMainInfoVo"  useGeneratedKeys="true" keyProperty="id">
         insert into house_main_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
