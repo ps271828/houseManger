@@ -1,5 +1,7 @@
 package com.houses.dao;
 
+import com.houses.common.vo.HouseItemVo;
+
 import java.util.List;
 
 /**
@@ -9,4 +11,5 @@ import java.util.List;
  */
 public interface IHouseItemDao {
 
+    void batchSaveHouseItem(List<HouseItemVo> houseItemVoList);
 }

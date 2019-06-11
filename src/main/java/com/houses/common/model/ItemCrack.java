@@ -13,13 +13,31 @@ public class ItemCrack {
 
     private Integer itemId;
 
-    private Integer crackTyppe;
+    private Integer crackType;
 
     private Integer wallDamage;
 
     private double maxLength;
 
     private String exampleImage;
+
+    private String crackDirection;
+
+    public Integer getCrackType() {
+        return crackType;
+    }
+
+    public void setCrackType(Integer crackType) {
+        this.crackType = crackType;
+    }
+
+    public String getCrackDirection() {
+        return crackDirection;
+    }
+
+    public void setCrackDirection(String crackDirection) {
+        this.crackDirection = crackDirection;
+    }
 
     public Integer getId() {
         return id;
@@ -38,11 +56,11 @@ public class ItemCrack {
     }
 
     public Integer getCrackTyppe() {
-        return crackTyppe;
+        return crackType;
     }
 
-    public void setCrackTyppe(Integer crackTyppe) {
-        this.crackTyppe = crackTyppe;
+    public void setCrackTyppe(Integer crackType) {
+        this.crackType = crackType;
     }
 
     public Integer getWallDamage() {

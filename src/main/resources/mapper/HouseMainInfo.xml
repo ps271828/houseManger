@@ -15,4 +15,41 @@
         SELECT <include refid="allProp" />  FROM house_main_info
         where id = #{id}
     </select>
+
+    <insert id="saveHouseMainInfo" parameterType="com.houses.common.vo.HouseMainInfoVo"  useGeneratedKeys="true" keyProperty="id">
+        insert into house_main_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+              id,
+          </if>
+        <if test="projectName != '' and projectName != null">
+            project_name,
+        </if>
+        <if test="houseNum != '' and houseNum != null">
+            house_number,
+        </if>
+        <if test="masterName != '' and masterName != null">
+            master_name,
+        </if>
+        <if test="checkDate != '' and checkDate != null">
+            check_date,
+        </if>
+        </trim> values <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="id != null">
+            id,
+        </if>
+        <if test="projectName != '' and projectName != null">
+            #{projectName},
+        </if>
+        <if test="houseNum != '' and houseNum != null">
+            #{houseNum},
+        </if>
+        <if test="masterName != '' and masterName != null">
+            #{masterName},
+        </if>
+        <if test="checkDate != '' and checkDate != null">
+            #{checkDate},
+        </if>
+    </trim>
+    </insert>
 </mapper>

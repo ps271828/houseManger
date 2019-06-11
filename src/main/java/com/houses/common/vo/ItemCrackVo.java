@@ -1,8 +1,6 @@
 package com.houses.common.vo;
 
 import com.houses.common.model.ItemCrack;
-import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @Author:panshuang
@@ -11,13 +9,4 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public class ItemCrackVo extends ItemCrack {
 
-    private MultipartFile exampleImageFile;
-
-    public MultipartFile getExampleImageFile() {
-        return exampleImageFile;
-    }
-
-    public void setExampleImageFile(MultipartFile exampleImageFile) {
-        this.exampleImageFile = exampleImageFile;
-    }
 }

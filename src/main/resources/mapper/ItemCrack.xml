@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.houses.dao.IItemCrackDao">
+
+    <sql id="allProp">
+        id                  id,
+        item_id            itemId,
+        crack_type         crackType,
+        wall      wallDamage,
+        max_length       maxLength,
+        example_image             exampleImage,
+        crack_direction   crackDirection
+    </sql>
+
+    <insert id="batchSaveItemCrack" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+        insert into item_crack
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="item.id != null">
+                id,
+            </if>
+            <if test="item.itemId != null">
+                item_id,
+            </if>
+            <if test="item.crackType != null">
+                crack_type,
+            </if>
+            <if test="item.wallDamage != null">
+                wall,
+            </if>
+            <if test="item.maxLength != null">
+                max_length,
+            </if>
+            <if test="item.exampleImage != '' and item.exampleImage != null">
+                example_image,
+            </if>
+            <if test="item.crackDirection != '' and item.crackDirection != null">
+                crack_direction,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="item.id != null">
+                #{item.id},
+            </if>
+            <if test="item.itemId != null">
+                #{item.itemId},
+            </if>
+            <if test="item.crackType != null">
+                #{item.crackType},
+            </if>
+            <if test="item.wallDamage != null">
+                #{item.wallDamage},
+            </if>
+            <if test="item.maxLength != null">
+                #{item.maxLength},
+            </if>
+            <if test="item.exampleImage != '' and item.exampleImage != null">
+                #{item.exampleImage},
+            </if>
+            <if test="item.crackDirection != '' and item.crackDirection != null">
+                #{item.crackDirection},
+            </if>
+        </trim>
+        </foreach>
+    </insert>
+</mapper>

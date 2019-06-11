@@ -13,7 +13,6 @@ import java.util.List;
  */
 public class HouseItemVo extends HouseItem {
 
-    private MultipartFile fullExampleImge;
 
     private List<ItemCrackVo> itemCrackVoList;
 
@@ -23,14 +22,5 @@ public class HouseItemVo extends HouseItem {
 
     public void setItemCrackVoList(List<ItemCrackVo> itemCrackVoList) {
         this.itemCrackVoList = itemCrackVoList;
-    }
-
-    public MultipartFile getFullExampleImge() {
-
-        return fullExampleImge;
-    }
-
-    public void setFullExampleImge(MultipartFile fullExampleImge) {
-        this.fullExampleImge = fullExampleImge;
     }
 }
