@@ -27,16 +27,19 @@ layui.use('table', function(){
     table.on('tool(demo)', function(obj){
         var data = obj.data;
         if(obj.event === 'del'){
-
+            //获取当前网址，如： http://localhost:8083/uimcardprj/share/meun.jsp
+            var curWwwPath=window.document.location.href;
+            //获取主机地址之后的目次，如： uimcardprj/share/meun.jsp
+            var pathName=window.document.location.pathname;
+            var pos=curWwwPath.indexOf(pathName);
+            //获取主机地址，如： http://localhost:8083
+            var localhostPaht=curWwwPath.substring(0,pos);
+            window.location.href = localhostPaht + "/houses/downLoadPdf?houseId=" + data.id;
         } else if(obj.event === 'edit'){
             layer.prompt({
                 formType: 2
                 ,value: data.email
             }, function(value, index){
-                obj.update({
-                    email: value
-                });
-                layer.close(index);
             });
         }
     });
