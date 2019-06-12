@@ -22,7 +22,7 @@
 						</div>
 
 						<div class="layui-col-md4">
-							<div style="display: inline-block;width: 90%"><input id="projectNmae" style="width: 100%;" placeholder="请输入工程名称" /></div>
+							<div style="display: inline-block;width: 90%"><input id="projectNmae" style="width: 100%;" class="layui-input" placeholder="请输入工程名称" /></div>
 						</div>
 
 						<div class="layui-col-md2">
@@ -31,26 +31,7 @@
 
 						<div class="layui-col-md4">
 							<div style="display: inline-block;width: 100%">
-								<div>
-									<select style="display: inline-block;width: 32%;">
-										<option>1</option>
-										<option>1</option>
-										<option>1</option>
-									</select>
-									<select style="display: inline-block;width: 32%;;">
-										<option>1</option>
-										<option>1</option>
-										<option>1</option>
-									</select>
-									<select style="display: inline-block;width: 32%;;">
-										<option>1</option>
-										<option>1</option>
-										<option>1</option>
-									</select>
-								</div>
-								<div style="margin-top: 10px;">
-									<textarea style="width: 97.5%;height: 50px;"></textarea>
-								</div>
+									<textarea id="houseNum" class="layui-input" style="width: 97.5%;height: 50px;" placeholder="请输入门牌号"></textarea>
 							</div>
 						</div>
 					</div>
@@ -60,13 +41,13 @@
 							<div style="width: 30%; display: inline-block;">检测日期</div>
 						</div>
 						<div class="layui-col-md4">
-							<div style="display: inline-block;width: 90%"><input id="checkDate" style="width: 100%;" placeholder="请输入工程名称" /></div>
+							<div style="display: inline-block;width: 90%"><input id="checkDate" class="layui-input" style="width: 100%;" placeholder="请选择检测日期" /></div>
 						</div>
 						<div class="layui-col-md2">
 							<div style="width: 30%;display: inline-block;vertical-align: top;">户主姓名</div>
 						</div>
 						<div class="layui-col-md4">
-							<div style="display: inline-block;width: 100%"><input id="masterName" style="width: 100%;" placeholder="请输入工程名称" /></div>
+							<div style="display: inline-block;width: 100%"><input id="masterName" class="layui-input" style="width: 100%;" placeholder="请输入户主姓名" /></div>
 						</div>
 					</div>
 				</div>
@@ -78,7 +59,7 @@
 								构件序号
 							</div>
 							<div class="layui-col-md10">
-								<input id="serialNum0" style="width: 98.5%;" />
+								<input id="serialNum0" class="layui-input" style="width: 98.5%;" />
 							</div>
 						</div>
 						<div class="layui-row">
@@ -129,10 +110,18 @@
 										裂缝方向
 									</div>
 									<div class="layui-col-md10">
-										<input type="checkbox" name="crackDirection00" value="0">斜
-										<input type="checkbox" name="crackDirection00" value="1">竖
-										<input type="checkbox" name="crackDirection00" value="3">水
-										<input type="checkbox" name="crackDirection00" value="4">不规则
+										<input type="radio" name="crackDirection00" value="0">斜
+										<input type="radio" name="crackDirection00" value="1">竖
+										<input type="radio" name="crackDirection00" value="3">水
+										<input type="radio" name="crackDirection00" value="4">不规则
+									</div>
+								</div>
+								<div class="layui-row">
+									<div class="layui-col-md2">
+										最大长度mm
+									</div>
+									<div class="layui-col-md10">
+										<input id="maxLength00" style="width: 98.5%;" />
 									</div>
 								</div>
 								<div class="layui-row">
@@ -140,7 +129,7 @@
 										最大宽度mm
 									</div>
 									<div class="layui-col-md10">
-										<input id="maxLength00" style="width: 98.5%;" />
+										<input id="maxWidth00" style="width: 98.5%;" />
 									</div>
 								</div>
 								<div class="layui-row">
@@ -192,7 +181,16 @@
 								其他
 							</div>
 							<div class="layui-col-md10">
-								<input id="others0" style="width: 98.5%;" />
+								<input id="others0" list="othersList0" style="width: 98.5%;" />
+								<datalist id="othersList0">
+									<option value="吊顶拼接缝">
+									<option value="吊顶与墙面交接缝">
+									<option value="吊顶与楼板交接缝">
+									<option value="面砖开裂">
+									<option value="地砖开裂">
+									<option value="台面拼接缝">
+									<option value="门框交接缝">
+								</datalist>
 							</div>
 						</div>
 						<div class="layui-row" style="margin-top: 20px;">
@@ -211,7 +209,7 @@
 			<div id="foot">
 				<div class="layui-container">
 					<div class="layui-row">
-						<div class="layui-col-md2" style="text-align: right">
+						<div class="layui-col-md12" style="text-align: right">
 							<button onclick="saveProjectInfo()">保存信息</button>
 						</div>
 					</div>

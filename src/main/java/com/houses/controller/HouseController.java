@@ -10,8 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +40,7 @@ public class HouseController {
 
     @RequestMapping(value = "/addHouse")
     public String getHouseInfo(){
-        //iHouseService.selectHouseMainInfoById(1);
+        FileUtils.deleteQuietly(new File(TEMP_PATH));
         return "houseInfo/addHouseInfo.html";
     }
 
@@ -50,6 +52,12 @@ public class HouseController {
     @RequestMapping(value = "/showHouses")
     public String showHouses(){
         return "houseInfo/showHouses.html";
+    }
+
+    @RequestMapping(value = "/editHouseInfo")
+    public String showHouses(Integer houseId, ModelMap modelMap){
+        modelMap.addAttribute("houseId", houseId);
+        return "houseInfo/editHouseInfo.html";
     }
 
     @RequestMapping(value = "/queryHouses")
@@ -93,6 +101,20 @@ public class HouseController {
             imagePath = "";
         }
         resultDto = new ResultDto<>(ResultDto.SUCCESS, null , imagePath);
+        return resultDto;
+    }
+
+    @RequestMapping(value = "/getHouseInfoByHouseMainInfoVo")
+    @ResponseBody
+    public ResultDto<HouseMainInfoVo> getHouseInfoByHouseMainInfoVo(HouseMainInfoVo houseMainInfoVo){
+        ResultDto<HouseMainInfoVo> resultDto = new ResultDto<>();
+        try {
+            resultDto = iHouseService.getHouseInfoByHouseMainInfoVo(houseMainInfoVo);
+        } catch (Exception e) {
+            logger.error("获取房屋信息异常！");
+            e.printStackTrace();
+            resultDto.setResultData(ResultDto.FAIL, "获取房屋信息异常！", null);
+        }
         return resultDto;
     }
 }

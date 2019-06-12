@@ -27,10 +27,7 @@ layui.use('table', function(){
     table.on('tool(demo)', function(obj){
         var data = obj.data;
         if(obj.event === 'del'){
-            layer.confirm('真的删除行么', function(index){
-                obj.del();
-                layer.close(index);
-            });
+
         } else if(obj.event === 'edit'){
             layer.prompt({
                 formType: 2

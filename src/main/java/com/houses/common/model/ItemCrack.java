@@ -20,6 +20,16 @@ public class ItemCrack extends BaseDao {
 
     private double maxLength;
 
+    private double maxWidth;
+
+    public double getMaxWidth() {
+        return maxWidth;
+    }
+
+    public void setMaxWidth(double maxWidth) {
+        this.maxWidth = maxWidth;
+    }
+
     private String exampleImage;
 
     private String crackDirection;

@@ -1,5 +1,6 @@
 $(function () {
-    crackTypeChange('00');
+
+    initHouseInfo($('#houseId').val());
 
     layui.use('laydate', function() {
         var laydate = layui.laydate;
@@ -9,6 +10,10 @@ $(function () {
         });
     })
 })
+
+function initHouseInfo(houseId) {
+
+}
 
 function deleteProjectItem(sort) {
     $("#item" + sort).remove();
@@ -407,10 +412,8 @@ layui.use(['form', 'upload'], function () {
 
         var crackNum = itemNum + (parseInt(currSort) + 1);
 
-        var hiddenNum = parseInt(currSort) + 1;
-
         var itemContent = '<div id="crackItem' + crackNum + '" class="layui-row">';
-        itemContent += '<input type="hidden" value="' + hiddenNum + '" />';
+        itemContent += '<input type="hidden" value="' + sort + '" />';
 
         itemContent += '<div class="layui-row">';
         itemContent += '<div class="layui-col-md2">';
@@ -488,7 +491,7 @@ layui.use(['form', 'upload'], function () {
         itemContent += '</div>';
 
         $(itemContent).insertBefore(lastSecondDiv.last());
-      //  lastSecondDiv.eq(lastSecondDiv.length - 2).find('input').eq(0).val(crackNum);
+        lastSecondDiv.eq(lastSecondDiv.length - 2).find('input').eq(0).val(crackNum);
         crackTypeChange(crackNum);
         picupload("#exampleImage" + crackNum, "#preview" + crackNum);
     }

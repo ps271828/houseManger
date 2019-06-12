@@ -30,4 +30,11 @@ public interface IHouseService {
      * @return
      */
     PageDto<List<HouseMainInfoVo>> queryHouses(HouseMainInfoVo houseMainInfoVo);
+
+    /**
+     * 获取房屋信息
+     * @param houseMainInfoVo
+     * @return
+     */
+    ResultDto<HouseMainInfoVo> getHouseInfoByHouseMainInfoVo(HouseMainInfoVo houseMainInfoVo);
 }

@@ -9,9 +9,15 @@
         crack_type         crackType,
         wall      wallDamage,
         max_length       maxLength,
+        max_width        maxWidth,
         example_image             exampleImage,
         crack_direction   crackDirection
     </sql>
+
+    <select id="queryCrackListByIdList" parameterType="java.util.List" resultType="com.houses.common.vo.ItemCrackVo">
+        select <include refid="allProp"></include> from item_crack
+        where item_id in <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">#{item}</foreach>
+    </select>
 
     <insert id="batchSaveItemCrack" parameterType="java.util.List">
         <foreach collection="list" item="item" index="index" open="" close="" separator=";">
@@ -31,6 +37,9 @@
             </if>
             <if test="item.maxLength != null">
                 max_length,
+            </if>
+            <if test="item.maxWidth != null">
+                max_width,
             </if>
             <if test="item.exampleImage != '' and item.exampleImage != null">
                 example_image,
@@ -56,8 +65,11 @@
             <if test="item.maxLength != null">
                 #{item.maxLength},
             </if>
+            <if test="item.maxWidth != null">
+                ${item.maxWidth},
+            </if>
             <if test="item.exampleImage != '' and item.exampleImage != null">
-                #{item.exampleImage},
+                <![CDATA[#{item.exampleImage}]]> ,
             </if>
             <if test="item.crackDirection != '' and item.crackDirection != null">
                 #{item.crackDirection},

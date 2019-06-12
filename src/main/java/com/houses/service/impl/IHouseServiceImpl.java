@@ -2,6 +2,7 @@ package com.houses.service.impl;
 
 import com.houses.common.dto.PageDto;
 import com.houses.common.dto.ResultDto;
+import com.houses.common.model.HouseItem;
 import com.houses.common.model.HouseMainInfo;
 import com.houses.common.vo.HouseItemVo;
 import com.houses.common.vo.HouseMainInfoVo;
@@ -14,6 +15,8 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +39,7 @@ public class IHouseServiceImpl implements IHouseService {
 
     private static final String TEMP_PATH = System.getProperty("java.io.tmpdir") + File.separator + "temp" + File.separator;
 
-    @Value("house.config.upload")
+    @Value("${house.config.upload}")
     private String UPLOAD_PATH;
 
     @Autowired
@@ -44,10 +47,12 @@ public class IHouseServiceImpl implements IHouseService {
 
     @Override
     public List<HouseMainInfo> selectHouseMainInfoById(Integer id) {
-        return iHouseMainInfoDao.selectHouseMainInfoById(1);
+       // return iHouseMainInfoDao.selectHouseMainInfoById(1);
+        return  null;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultDto<String> saveHouseInfo(HouseMainInfoVo houseMainInfoVo) {
         ResultDto<String> resultDto = new ResultDto<>();
 
@@ -55,6 +60,7 @@ public class IHouseServiceImpl implements IHouseService {
         iHouseMainInfoDao.saveHouseMainInfo(houseMainInfoVo);
 
         //拼接id到构件项
+        List<HouseItemVo> itemVoList = new ArrayList<>();
         for (HouseItemVo currItem : houseMainInfoVo.getHouseItemVoList()) {
             currItem.setHouseId(houseMainInfoVo.getId());
             File fullImage = new File(currItem.getFullItemExampleImage());
@@ -66,14 +72,17 @@ public class IHouseServiceImpl implements IHouseService {
                 resultDto.setResultData(ResultDto.FAIL, "保存全景图失败！", null);
                 return resultDto;
             }
+            itemVoList.add(currItem);
         }
 
         //保存构件信息
-        iHouseItemDao.batchSaveHouseItem(houseMainInfoVo.getHouseItemVoList());
+        if (!CollectionUtils.isEmpty(itemVoList)) {
+            iHouseItemDao.batchSaveHouseItem(itemVoList);
+        }
 
         //拼装构件id到裂缝想中
         List<ItemCrackVo> itemCrackVoList = new ArrayList<>();
-        for (HouseItemVo currItem : houseMainInfoVo.getHouseItemVoList()) {
+        for (HouseItemVo currItem : itemVoList) {
             for (ItemCrackVo currCrack : currItem.getItemCrackVoList()) {
                 currCrack.setItemId(currItem.getId());
                 File exampleImage = new File(currCrack.getExampleImage());
@@ -90,9 +99,9 @@ public class IHouseServiceImpl implements IHouseService {
         }
 
         //保存裂缝项
-        iItemCrackDao.batchSaveItemCrack(itemCrackVoList);
-
-        FileUtils.deleteQuietly(new File(TEMP_PATH));
+        if (!CollectionUtils.isEmpty(itemCrackVoList)) {
+            iItemCrackDao.batchSaveItemCrack(itemCrackVoList);
+        }
 
         resultDto.setResultData(ResultDto.SUCCESS, null, "保存成功！");
         return resultDto;
@@ -111,5 +120,37 @@ public class IHouseServiceImpl implements IHouseService {
         pageDto.setCount(count);
         pageDto.setData(houseMainInfoVoList);
         return pageDto;
+    }
+
+    @Override
+    public ResultDto<HouseMainInfoVo> getHouseInfoByHouseMainInfoVo(HouseMainInfoVo houseMainInfoVo) {
+        ResultDto<HouseMainInfoVo> resultDto = new ResultDto<>();
+
+        //先根据id获取主要信息
+        houseMainInfoVo = iHouseMainInfoDao.selectHouseMainInfoById(houseMainInfoVo.getId());
+
+        //再获取构件项信息
+        List<HouseItemVo> houseItemVoList = iHouseItemDao.queryItemById(houseMainInfoVo.getId());
+
+        //根据构件项集合获取所有裂缝项
+        List<Integer> idList = new ArrayList<>();
+        houseItemVoList.forEach(currItem -> idList.add(currItem.getId()));
+
+        List<ItemCrackVo> itemCrackVoList = iItemCrackDao.queryCrackListByIdList(idList);
+
+        //拼接数据
+        for (HouseItemVo currItem : houseItemVoList) {
+            List<ItemCrackVo> crackVoList = new ArrayList<>();
+            for (ItemCrackVo currCrack : itemCrackVoList) {
+                if (currItem.getId() == currCrack.getItemId()) {
+                    crackVoList.add(currCrack);
+                }
+            }
+            currItem.setItemCrackVoList(crackVoList);
+        }
+
+        houseMainInfoVo.setHouseItemVoList(houseItemVoList);
+        resultDto.setResultData(ResultDto.SUCCESS, null, houseMainInfoVo);
+        return resultDto;
     }
 }

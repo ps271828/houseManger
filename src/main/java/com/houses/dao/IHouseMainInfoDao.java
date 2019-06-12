@@ -11,7 +11,7 @@ import java.util.List;
  * @Description:
  */
 public interface IHouseMainInfoDao {
-    List<HouseMainInfo> selectHouseMainInfoById(int i);
+    HouseMainInfoVo selectHouseMainInfoById(int id);
 
     /**
      * 保存房屋信息

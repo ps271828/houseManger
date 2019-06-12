@@ -13,56 +13,31 @@
         comment             comment
     </sql>
 
+    <select id="queryItemById" parameterType="java.lang.Integer" resultType="com.houses.common.vo.HouseItemVo">
+      select <include refid="allProp"></include> from house_item
+        where house_id = #{id}
+    </select>
+
     <insert id="batchSaveHouseItem" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
-        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
             insert into house_item
-            <trim prefix="(" suffix=")" suffixOverrides=",">
-                <if test="item.id != null">
-                    id,
-                </if>
-                <if test="item.houseId != null">
+            (
                     house_id,
-                </if>
-                <if test="item.itemSerial != '' and item.itemSerial != null">
                     item_serial,
-                </if>
-                <if test="item.itemDirection != null">
                     item_direction,
-                </if>
-                <if test="item.itemLocation != null">
                     item_location,
-                </if>
-                <if test="item.fullItemExampleImage != '' and item.fullItemExampleImage != null">
                     item_full_example_image,
-                </if>
-                <if test="item.comment != '' and item.comment != null">
-                    comment,
-                </if>
-            </trim>
+                    comment
+            )
             values
-            <trim prefix="(" suffix=")" suffixOverrides=",">
-                <if test="item.id != null">
-                    #{id},
-                </if>
-                <if test="item.houseId != null">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=",">
+            (
                     #{item.houseId},
-                </if>
-                <if test="item.itemSerial != '' and item.itemSerial != null">
                     #{item.itemSerial},
-                </if>
-                <if test="item.itemDirection != null">
                     #{item.itemDirection},
-                </if>
-                <if test="item.itemLocation != null">
                     #{item.itemLocation},
-                </if>
-                <if test="item.fullItemExampleImage != '' and item.fullItemExampleImage != null">
                     #{item.fullItemExampleImage},
-                </if>
-                <if test="item.comment != '' and item.comment != null">
-                    #{item.comment},
-                </if>
-            </trim>
+                    #{item.comment}
+            )
         </foreach>
     </insert>
 </mapper>
