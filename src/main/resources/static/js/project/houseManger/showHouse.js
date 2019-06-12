@@ -23,26 +23,26 @@ layui.use('table', function(){
             },{ width:178, align:'15%', toolbar: '#barDemo'}
         ]]
     });
-});
 
-table.on('tool(test)', function(obj){
-    var data = obj.data;
-    if(obj.event === 'del'){
-        layer.confirm('真的删除行么', function(index){
-            obj.del();
-            layer.close(index);
-        });
-    } else if(obj.event === 'edit'){
-        layer.prompt({
-            formType: 2
-            ,value: data.email
-        }, function(value, index){
-            obj.update({
-                email: value
+    table.on('tool(demo)', function(obj){
+        var data = obj.data;
+        if(obj.event === 'del'){
+            layer.confirm('真的删除行么', function(index){
+                obj.del();
+                layer.close(index);
             });
-            layer.close(index);
-        });
-    }
+        } else if(obj.event === 'edit'){
+            layer.prompt({
+                formType: 2
+                ,value: data.email
+            }, function(value, index){
+                obj.update({
+                    email: value
+                });
+                layer.close(index);
+            });
+        }
+    });
 });
 
 function formatDate(now) {
