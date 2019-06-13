@@ -33,7 +33,7 @@ import java.util.List;
 @RequestMapping(value = "/houses")
 public class HouseController {
 
-    private static final String TEMP_PATH = System.getProperty("java.io.tmpdir") + File.separator ;
+    private static final String TEMP_PATH = System.getProperty("java.io.tmpdir") ;
 
     private static final String IMAGE_SUFFIX = "image.jpg";
 

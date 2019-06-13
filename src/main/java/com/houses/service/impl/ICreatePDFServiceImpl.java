@@ -142,20 +142,22 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 			for(HouseItemVo houseItemVo : houseMainInfoVo.getHouseItemVoList()) {
 				List<ItemCrackVo> itemCrackVoList = houseItemVo.getItemCrackVoList();
 				for(ItemCrack itemCrackVo : itemCrackVoList) {
-					System.out.println(itemCrackVo.toString());
 					PdfPCell cell311 = new PdfPCell(new Phrase(houseItemVo.toString() + itemCrackVo.toString() + i++, font));
 					table31.addCell(cell311);
-					
+					cell311.setBorder(Rectangle.NO_BORDER);
 					Image image = Image.getInstance(itemCrackVo.getExampleImage());
+					PdfPCell cell312 = new PdfPCell(image);
+					cell312.setBorder(Rectangle.NO_BORDER);
 					table32.addCell(image);
-					
-					table32.addCell(new PdfPCell(new Phrase("图"+i, font)));
+					PdfPCell cell313 = new PdfPCell(new Phrase("图"+i, font));
+					cell313.setBorder(Rectangle.NO_BORDER);
+					table32.addCell(cell313);
 				}
 			}
 			cell31.addElement(table31);
 			cell32.addElement(table32);
 			cell33.addElement(table33);
-			
+	
 			table3.addCell(cell31);
 			table3.addCell(cell32);
 			table3.addCell(cell33);
@@ -163,7 +165,7 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 			PdfPCell cell3 = getPdfPTableCell(table3);
 			
 			totalTable.addCell(cell1);
-			totalTable.addCell(cell3);
+			totalTable.addCell(cell3);			
 			document.add(totalTable);
 			document.close();
 			writer.close();
