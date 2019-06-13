@@ -47,8 +47,8 @@ public class IHouseServiceImpl implements IHouseService {
 
     @Override
     public List<HouseMainInfo> selectHouseMainInfoById(Integer id) {
-       // return iHouseMainInfoDao.selectHouseMainInfoById(1);
-        return  null;
+        // return iHouseMainInfoDao.selectHouseMainInfoById(1);
+        return null;
     }
 
     @Override
@@ -66,6 +66,7 @@ public class IHouseServiceImpl implements IHouseService {
             File fullImage = new File(currItem.getFullItemExampleImage());
             try {
                 FileUtils.copyFile(fullImage, new File(UPLOAD_PATH + File.separator + fullImage.getName()));
+                FileUtils.deleteQuietly(fullImage);
                 currItem.setFullItemExampleImage(UPLOAD_PATH + File.separator + fullImage.getName());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -88,6 +89,7 @@ public class IHouseServiceImpl implements IHouseService {
                 File exampleImage = new File(currCrack.getExampleImage());
                 try {
                     FileUtils.copyFile(exampleImage, new File(UPLOAD_PATH + File.separator + exampleImage.getName()));
+                    FileUtils.deleteQuietly(exampleImage);
                     currCrack.setExampleImage(UPLOAD_PATH + File.separator + exampleImage.getName());
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -113,7 +115,7 @@ public class IHouseServiceImpl implements IHouseService {
 
         Integer count = iHouseMainInfoDao.queryHousesCount();
 
-        houseMainInfoVo.setStart((houseMainInfoVo.getPage() - 1)*houseMainInfoVo.getLimit());
+        houseMainInfoVo.setStart((houseMainInfoVo.getPage() - 1) * houseMainInfoVo.getLimit());
 
         List<HouseMainInfoVo> houseMainInfoVoList = iHouseMainInfoDao.queryHousesPaged(houseMainInfoVo);
 
@@ -136,17 +138,18 @@ public class IHouseServiceImpl implements IHouseService {
         List<Integer> idList = new ArrayList<>();
         houseItemVoList.forEach(currItem -> idList.add(currItem.getId()));
 
-        List<ItemCrackVo> itemCrackVoList = iItemCrackDao.queryCrackListByIdList(idList);
-
-        //拼接数据
-        for (HouseItemVo currItem : houseItemVoList) {
-            List<ItemCrackVo> crackVoList = new ArrayList<>();
-            for (ItemCrackVo currCrack : itemCrackVoList) {
-                if (currItem.getId() == currCrack.getItemId()) {
-                    crackVoList.add(currCrack);
+        if (!CollectionUtils.isEmpty(idList)) {
+            List<ItemCrackVo> itemCrackVoList = iItemCrackDao.queryCrackListByIdList(idList);
+            //拼接数据
+            for (HouseItemVo currItem : houseItemVoList) {
+                List<ItemCrackVo> crackVoList = new ArrayList<>();
+                for (ItemCrackVo currCrack : itemCrackVoList) {
+                    if (currItem.getId() == currCrack.getItemId()) {
+                        crackVoList.add(currCrack);
+                    }
                 }
+                currItem.setItemCrackVoList(crackVoList);
             }
-            currItem.setItemCrackVoList(crackVoList);
         }
 
         houseMainInfoVo.setHouseItemVoList(houseItemVoList);

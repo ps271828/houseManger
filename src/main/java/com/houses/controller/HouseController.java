@@ -4,6 +4,7 @@ import com.houses.common.dto.PageDto;
 import com.houses.common.dto.ResultDto;
 import com.houses.common.model.HouseMainInfo;
 import com.houses.common.vo.HouseMainInfoVo;
+import com.houses.service.ICreatePDFService;
 import com.houses.service.IHouseService;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -15,8 +16,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.io.File;
-import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +33,7 @@ import java.util.List;
 @RequestMapping(value = "/houses")
 public class HouseController {
 
-    private static final String TEMP_PATH = System.getProperty("java.io.tmpdir") + File.separator + "temp" + File.separator;
+    private static final String TEMP_PATH = System.getProperty("java.io.tmpdir") ;
 
     private static final String IMAGE_SUFFIX = "image.jpg";
 
@@ -38,9 +42,11 @@ public class HouseController {
     @Autowired
     IHouseService iHouseService;
 
+    @Autowired
+    ICreatePDFService iCreatePDFService;
+
     @RequestMapping(value = "/addHouse")
     public String getHouseInfo(){
-        FileUtils.deleteQuietly(new File(TEMP_PATH));
         return "houseInfo/addHouseInfo.html";
     }
 
@@ -116,5 +122,57 @@ public class HouseController {
             resultDto.setResultData(ResultDto.FAIL, "获取房屋信息异常！", null);
         }
         return resultDto;
+    }
+
+    @RequestMapping(value = "/downLoadPdf")
+    public void doGet(HttpServletRequest request, HttpServletResponse response, Integer houseId)
+            throws ServletException, IOException {
+
+        HouseMainInfoVo houseMainInfoVo = new HouseMainInfoVo();
+        houseMainInfoVo.setId(houseId);
+        ResultDto<HouseMainInfoVo> resultDto = iHouseService.getHouseInfoByHouseMainInfoVo(houseMainInfoVo);
+        houseMainInfoVo = resultDto.getData();
+
+        String path = TEMP_PATH + File.separator + System.currentTimeMillis() +".pdf";//获取文件的相对路径
+        iCreatePDFService.showHousePdf(path, houseMainInfoVo);
+        //response.setHeader告诉浏览器以什么方式打开
+        //假如文件名称是中文则要使用 URLEncoder.encode()编码
+        //否则直接使用response.setHeader("content-disposition", "attachment;filename=" + filename);即可
+        response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode("house.pdf", "UTF-8"));
+
+        InputStream in = null ;
+        OutputStream out = null ;
+        try
+        {
+            in = new FileInputStream(path); //获取文件的流
+            int len = 0;
+            byte buf[] = new byte[1024];//缓存作用
+            out = response.getOutputStream();//输出流
+            while( (len = in.read(buf)) > 0 ) //切忌这后面不能加 分号 ”;“
+            {
+                out.write(buf, 0, len);//向客户端输出，实际是把数据存放在response中，然后web服务器再去response中读取
+            }
+        }finally
+        {
+            if(in!=null)
+            {
+                try{
+                    in.close();
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+            }
+
+            if(out!=null)
+            {
+                try{
+                    out.close();
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
     }
 }
