@@ -33,7 +33,7 @@ import java.util.List;
 @RequestMapping(value = "/houses")
 public class HouseController {
 
-    private static final String TEMP_PATH = System.getProperty("java.io.tmpdir") + File.separator + "temp" + File.separator;
+    private static final String TEMP_PATH = System.getProperty("java.io.tmpdir") + File.separator ;
 
     private static final String IMAGE_SUFFIX = "image.jpg";
 
@@ -133,7 +133,7 @@ public class HouseController {
         ResultDto<HouseMainInfoVo> resultDto = iHouseService.getHouseInfoByHouseMainInfoVo(houseMainInfoVo);
         houseMainInfoVo = resultDto.getData();
 
-        String path = TEMP_PATH + File.separator + "house.pdf";//获取文件的相对路径
+        String path = TEMP_PATH + File.separator + System.currentTimeMillis() +".pdf";//获取文件的相对路径
         iCreatePDFService.showHousePdf(path, houseMainInfoVo);
         //response.setHeader告诉浏览器以什么方式打开
         //假如文件名称是中文则要使用 URLEncoder.encode()编码

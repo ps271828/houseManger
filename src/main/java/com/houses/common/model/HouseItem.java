@@ -112,6 +112,6 @@ public class HouseItem extends BaseDao {
     		sb.append("构件位置为地面，");break;
     	}
     	sb.append("具体见影像资料。");
-		return super.toString();
+		return sb.toString();
 	}
 }
