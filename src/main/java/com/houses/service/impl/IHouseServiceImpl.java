@@ -66,6 +66,7 @@ public class IHouseServiceImpl implements IHouseService {
             File fullImage = new File(currItem.getFullItemExampleImage());
             try {
                 FileUtils.copyFile(fullImage, new File(UPLOAD_PATH + File.separator + fullImage.getName()));
+                FileUtils.deleteQuietly(new File(UPLOAD_PATH + File.separator + fullImage.getName()));
                 currItem.setFullItemExampleImage(UPLOAD_PATH + File.separator + fullImage.getName());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -88,6 +89,7 @@ public class IHouseServiceImpl implements IHouseService {
                 File exampleImage = new File(currCrack.getExampleImage());
                 try {
                     FileUtils.copyFile(exampleImage, new File(UPLOAD_PATH + File.separator + exampleImage.getName()));
+                    FileUtils.deleteQuietly(new File(UPLOAD_PATH + File.separator + exampleImage.getName()));
                     currCrack.setExampleImage(UPLOAD_PATH + File.separator + exampleImage.getName());
                 } catch (IOException e) {
                     e.printStackTrace();

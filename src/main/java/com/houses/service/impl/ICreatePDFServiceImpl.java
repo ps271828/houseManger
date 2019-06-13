@@ -73,10 +73,10 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 	/**
 	 * 
 	 * @param path PDF保存路径
-	 * @param projectName 工程名称
-	 * @param doorNo 门牌号
-	 * @param date 检测日期
-	 * @param name 户主名称
+	 * 	 * @param projectName 工程名称
+	 * 	 * @param doorNo 门牌号
+	 * 	 * @param date 检测日期
+	 * 	 * @param name 户主名称
 	 */
 	@Override
 	public void showHousePdf(String path,HouseMainInfoVo houseMainInfoVo) {

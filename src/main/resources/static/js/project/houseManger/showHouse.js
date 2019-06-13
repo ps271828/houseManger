@@ -15,7 +15,7 @@ layui.use('table', function(){
         limits:[10,20,50]
         ,cols: [[
             {field:'id', width:'10%', title: 'ID'}
-            ,{field:'projectNmae', width:'15%', title: '工程名称'}
+            ,{field:'projectName', width:'15%', title: '工程名称'}
             ,{field:'houseNum', width:'15%', title: '房屋编号', sort: true}
             ,{field:'checkDate', width:'10%', title: '检测日期', templet: function(d){
                     return formatDate(new Date(d.checkDate));
@@ -41,6 +41,21 @@ layui.use('table', function(){
                 ,value: data.email
             }, function(value, index){
             });
+        }else if (obj.event == 'detail') {
+            var id = obj.id + obj.checkDate;
+            var isData = false; //初始化一个标志，为false说明未打开该tab项 为true则说明已有
+            $.each($(".layui-tab-title li[lay-id]"), function () {
+                //如果点击左侧菜单栏所传入的id 在右侧tab项中的lay-id属性可以找到，则说明该tab项已经打开
+                if ($(this).attr("lay-id") == id) {
+                    isData = true;
+                }
+            })
+            if (isData == false) {
+                //标志为false 新增一个tab项
+                active.tabAdd("../houses/editHouseInfo?houseId=" + obj.id, id, "房屋详情");
+            }
+            //最后不管是否新增tab，最后都转到要打开的选项页面上
+            active.tabChange(obj.id);
         }
     });
 });

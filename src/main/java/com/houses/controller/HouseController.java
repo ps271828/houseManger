@@ -47,7 +47,6 @@ public class HouseController {
 
     @RequestMapping(value = "/addHouse")
     public String getHouseInfo(){
-        FileUtils.deleteQuietly(new File(TEMP_PATH));
         return "houseInfo/addHouseInfo.html";
     }
 
@@ -128,14 +127,14 @@ public class HouseController {
     @RequestMapping(value = "/downLoadPdf")
     public void doGet(HttpServletRequest request, HttpServletResponse response, Integer houseId)
             throws ServletException, IOException {
-        String path = TEMP_PATH + File.separator;//获取文件的相对路径
 
         HouseMainInfoVo houseMainInfoVo = new HouseMainInfoVo();
         houseMainInfoVo.setId(houseId);
         ResultDto<HouseMainInfoVo> resultDto = iHouseService.getHouseInfoByHouseMainInfoVo(houseMainInfoVo);
         houseMainInfoVo = resultDto.getData();
 
-        iCreatePDFService.showHousePdf(path, houseMainInfoVo.getProjectName(), houseMainInfoVo.getHouseNum(), "2019-06-13", houseMainInfoVo.getMasterName());
+        String path = TEMP_PATH + File.separator + "house.pdf";//获取文件的相对路径
+        iCreatePDFService.showHousePdf(path, houseMainInfoVo);
         //response.setHeader告诉浏览器以什么方式打开
         //假如文件名称是中文则要使用 URLEncoder.encode()编码
         //否则直接使用response.setHeader("content-disposition", "attachment;filename=" + filename);即可
