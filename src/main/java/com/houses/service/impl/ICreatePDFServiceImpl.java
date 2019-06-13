@@ -2,6 +2,9 @@ package com.houses.service.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -76,7 +79,7 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 	 * @param name 户主名称
 	 */
 	@Override
-	public void showHousePdf(String path,String projectName,String doorNo,String date,String name,HouseMainInfoVo houseMainInfoVo) {
+	public void showHousePdf(String path,HouseMainInfoVo houseMainInfoVo) {
 		Document document = null;
 		PdfWriter writer = null;
 		try {
@@ -92,18 +95,23 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 			//创建totalTable
 			PdfPTable totalTable = new PdfPTable(1);
 			// 第一行
+			
 			int[] table1Width = { 20,30,20,30 };
 			PdfPTable table1 = getPdfPTable(4, table1Width);
 			PdfPCell cell11 = new PdfPCell(new Phrase("工程名称", font));
-			PdfPCell cell12 = new PdfPCell(new Phrase(projectName, font));
+			PdfPCell cell12 = new PdfPCell(new Phrase(houseMainInfoVo.getProjectName(), font));
 			cell12.setHorizontalAlignment(Element.ALIGN_CENTER);
 			PdfPCell cell13 = new PdfPCell(new Phrase("门牌号", font));
-			PdfPCell cell14 = new PdfPCell(new Phrase(doorNo, font));
+			PdfPCell cell14 = new PdfPCell(new Phrase(houseMainInfoVo.getHouseNum(), font));
 			PdfPCell cell21 = new PdfPCell(new Phrase("检测日期", font));
-			PdfPCell cell22 = new PdfPCell(new Phrase(date, font));
+			Long timeLong = houseMainInfoVo.getCheckDate();
+			Date datetime = new Date(timeLong);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String formatDate = sdf.format(datetime);
+			PdfPCell cell22 = new PdfPCell(new Phrase(formatDate, font));
 			cell12.setHorizontalAlignment(Element.ALIGN_CENTER);
 			PdfPCell cell23 = new PdfPCell(new Phrase("户主姓名", font));
-			PdfPCell cell24 = new PdfPCell(new Phrase(name, font));
+			PdfPCell cell24 = new PdfPCell(new Phrase(houseMainInfoVo.getMasterName(), font));
 			table1.addCell(cell11);
 			table1.addCell(cell12);
 			table1.addCell(cell13);
