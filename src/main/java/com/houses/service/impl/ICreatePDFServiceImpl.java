@@ -1,18 +1,18 @@
 package com.houses.service.impl;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.houses.common.model.HouseMainInfo;
+import com.houses.common.model.ItemCrack;
 import com.houses.common.vo.HouseItemVo;
+import com.houses.common.vo.HouseMainInfoVo;
+import com.houses.common.vo.ItemCrackVo;
 import com.houses.service.ICreatePDFService;
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
@@ -21,15 +21,14 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfFunction;
 import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPRow;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 @Service
 public class ICreatePDFServiceImpl implements ICreatePDFService {
-
+	
+	
 	public static PdfPCell getPdfPTableCell(PdfPTable pdfPTable) throws Exception {
 		if (pdfPTable == null) {
 			throw new Exception("pdfPTable不能为空");
@@ -77,7 +76,7 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 	 * @param name 户主名称
 	 */
 	@Override
-	public void showHousePdf(String path,String projectName,String doorNo,String date,String name) {
+	public void showHousePdf(String path,String projectName,String doorNo,String date,String name,HouseMainInfoVo houseMainInfoVo) {
 		Document document = null;
 		PdfWriter writer = null;
 		try {
@@ -114,13 +113,49 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 			table1.addCell(cell23);
 			table1.addCell(cell24);
 			
-			PdfPCell cell = getPdfPTableCell(table1);
+			PdfPCell cell1 = getPdfPTableCell(table1);
 			
-			Paragraph theme2 = new Paragraph("构件信息完善中。。。。。", font);
-			theme.setAlignment(Element.ALIGN_CENTER);
-			document.add(theme2);
+			/*
+			 * 第三行分三个table显示
+			 * 第一个显示裂缝的文字信息
+			 * 第二个显示图片信息
+			 * 第三个显示图片下面的文字描述
+			 */
+			PdfPTable table3 = new PdfPTable(1);
+			PdfPCell cell31 = new PdfPCell();
+			PdfPCell cell32 = new PdfPCell();
+			PdfPCell cell33 = new PdfPCell();
+			int[] table31Width = { 50,50 };
+			//显示裂缝文字描述
+			PdfPTable table31 =  new PdfPTable(1);
+			PdfPTable table32 =  getPdfPTable(2, table31Width);
+			PdfPTable table33 =  getPdfPTable(2, table31Width);
+			int i = 1;
+			for(HouseItemVo houseItemVo : houseMainInfoVo.getHouseItemVoList()) {
+				List<ItemCrackVo> itemCrackVoList = houseItemVo.getItemCrackVoList();
+				for(ItemCrack itemCrackVo : itemCrackVoList) {
+					System.out.println(itemCrackVo.toString());
+					PdfPCell cell311 = new PdfPCell(new Phrase(houseItemVo.toString() + itemCrackVo.toString() + i++, font));
+					table31.addCell(cell311);
+					
+					Image image = Image.getInstance(itemCrackVo.getExampleImage());
+					table32.addCell(image);
+					
+					table32.addCell(new PdfPCell(new Phrase("图"+i, font)));
+				}
+			}
+			cell31.addElement(table31);
+			cell32.addElement(table32);
+			cell33.addElement(table33);
 			
-			totalTable.addCell(cell);
+			table3.addCell(cell31);
+			table3.addCell(cell32);
+			table3.addCell(cell33);
+			
+			PdfPCell cell3 = getPdfPTableCell(table3);
+			
+			totalTable.addCell(cell3);			
+			totalTable.addCell(cell1);
 			document.add(totalTable);
 			document.close();
 			writer.close();
