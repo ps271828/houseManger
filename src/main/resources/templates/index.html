@@ -67,6 +67,7 @@
         © layui.com - 底部固定区域
     </div>
 </div>
+<script type="text/javascript" src="../js/jquery-3.3.1.js"></script>
 <script type="text/javascript" src="../js/layui/layui.js"></script>
 <script>
     //JavaScript代码区域
@@ -101,6 +102,22 @@
                 })
             }
         };
+
+        window.btnTabAdd = function (url, id ,title) {
+            active.add(url, id ,title);
+        }
+
+        window.btnTabChange = function(id){
+            active.tabChange(id);
+        }
+
+        window.btnTabDel = function(id){
+            active.tabDelete(id);
+        }
+
+        window.btnTabDelAll = function(ids){
+            active.tabDeleteAll(ids);
+        }
 
 
         //当点击有site-demo-active属性的标签时，即左侧菜单栏中内容 ，触发点击事件
