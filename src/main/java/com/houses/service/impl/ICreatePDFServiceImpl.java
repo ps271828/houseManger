@@ -162,8 +162,8 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 			
 			PdfPCell cell3 = getPdfPTableCell(table3);
 			
-			totalTable.addCell(cell3);			
 			totalTable.addCell(cell1);
+			totalTable.addCell(cell3);			
 			document.add(totalTable);
 			document.close();
 			writer.close();
