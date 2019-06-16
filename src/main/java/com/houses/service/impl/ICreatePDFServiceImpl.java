@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
+import java.util.Base64.Decoder;
 import java.util.Date;
 import java.util.List;
 
@@ -144,9 +146,32 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 				
 				
 				PdfPCell table3Cell = getPdfPTableCell(table3);
+//				table3Cell.setPadding(1);
 				totalTable.addCell(table3Cell);			
 			}
-	
+			
+			int[] table4Width = {30,70};
+			PdfPTable table4 = getPdfPTable(2,table4Width);
+			Image image;
+			try {
+				PdfPCell cell42 = new PdfPCell(new Phrase("签名：", getFont()));
+				cell42.setBorder(Rectangle.NO_BORDER);
+				cell42.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				table4.addCell(cell42);
+				//图片
+				image = Image.getInstance("C:\\Users\\jht\\Pictures\\SpringBoot\\Snipaste_2019-04-29_22-41-50.png");
+				PdfPCell cell41= new PdfPCell(image,true);
+				cell41.setBorder(Rectangle.NO_BORDER);
+				cell41.setHorizontalAlignment(Element.ALIGN_LEFT);
+				table4.addCell(cell41);
+				//图片对应的文字 
+			} catch (BadElementException | IOException e) {
+				e.printStackTrace();
+			}
+			PdfPCell table4Cell = getPdfPTableCell(table4);
+			table4Cell.setBorder(Rectangle.NO_BORDER);
+			totalTable.addCell(table4Cell);
+			
 			document.add(totalTable);
 			document.close();
 			writer.close();
@@ -231,4 +256,5 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 		table1Cell.setBorder(Rectangle.NO_BORDER);
 		return table1Cell;
 	}
+	
 }

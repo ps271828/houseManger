@@ -101,35 +101,47 @@ public class ItemCrack extends BaseDao {
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		
-		if("1".equals(crackType)) {
+		if("0".equals(crackType)) {
 //			 墙面 1--空鼓 2--龟裂 */
-			sb.append("墙面出现空鼓，");
-		}else if("2".equals(crackType)) {
-			sb.append("墙面出现龟裂，");
+			sb.append("，");
+		}else if("1".equals(crackType)) {
+			sb.append("");
 		}
-		if(wallDamage != null ) {
+		if( "0".equals(crackType) && wallDamage != null ) {
 			switch(wallDamage) {
+			case 0:
+				sb.append("装饰面层出现龟裂");break;
 			case 1:
-				sb.append("裂缝方向为斜方向，");break;
-			case 2:
-				sb.append("裂缝方向为竖直方向，");break;
-			case 3:
-				sb.append("裂缝方向为水平方向，");break;
-			case 4:
-				sb.append("裂缝方向为不规则方向，");break;
+				sb.append("装饰面层出现空鼓");break;
+			}
+		}
+		if("1".equals(crackType) && crackDirection != null) {
+			sb.append("构件存在裂缝");
+		}
+		
+		if(crackDirection != null) {
+			switch(crackDirection) {
+			case "0":
+				sb.append("，裂缝方向为斜方向，");break;
+			case "1":
+				sb.append("，裂缝方向为竖直方向，");break;
+			case "2":
+				sb.append("，裂缝方向为水平方向，");break;
+			case "3":
+				sb.append("，裂缝方向为不规则方向，");break;
 			default:
 				break;
 			}
 		}
 		if(maxLength != null) {
-			sb.append("最大长度为" + maxLength + "毫米。");
+			sb.append("，最大长度为" + maxLength + "毫米");
 		}
 		
 		if(maxWidth != null) {
-			sb.append("最大宽度为" + maxWidth + "毫米。");
+			sb.append("，最大宽度为" + maxWidth + "毫米");
 		}
 		
-		sb.append("如图");
+		sb.append("。如图");
 		return sb.toString();
 	}
 }
