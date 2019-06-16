@@ -144,7 +144,7 @@ public class IHouseServiceImpl implements IHouseService {
             for (HouseItemVo currItem : houseItemVoList) {
                 List<ItemCrackVo> crackVoList = new ArrayList<>();
                 for (ItemCrackVo currCrack : itemCrackVoList) {
-                    if (currItem.getId() == currCrack.getItemId()) {
+                    if (currItem.getId().equals(currCrack.getItemId())) {
                         crackVoList.add(currCrack);
                     }
                 }

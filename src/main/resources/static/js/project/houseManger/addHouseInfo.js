@@ -44,8 +44,11 @@ function buildSaveData() {
     if ($.trim(projectNmae) == "") {
         alert("工程名称不能为空，请重新输入！");
         return new Object();
-  ``  }
+        ``
+    }
     obj.projectName = projectNmae;
+
+    obj.id = $('#houseId').val();
 
     //检测日期
     var checkDate = $('#checkDate').val();
@@ -53,14 +56,15 @@ function buildSaveData() {
         alert("检测日期不能为空，请重新输入！");
         return new Object();
     }
-    obj.checkDate = new Date(Date.parse(checkDate.replace(/-/g, "/"))).getTime();;
+    obj.checkDate = new Date(Date.parse(checkDate.replace(/-/g, "/"))).getTime();
+    ;
 
-    var masterName = $('#masterName').val();
+    /*var masterName = $('#masterName').val();
     if ($.trim(masterName) == "") {
         alert("户主姓名不能为空，请重新输入！");
         return new Object();
     }
-    obj.masterName = masterName;
+    obj.masterName = masterName;*/
 
     var houseNum = $('#houseNum').val();
     if ($.trim(houseNum) == "") {
@@ -78,25 +82,19 @@ function buildSaveData() {
         var itemObj = new Object();
 
         var itemSerial = $('#serialNum' + currItemSort).val();
-        if ($.trim(itemSerial) == "") {
-            alert("第" + i + "个构件序列号为空，请重新输入！");
-            return new Object();
+        if ($.trim(itemSerial) != "") {
+            itemObj.itemSerial = itemSerial;
         }
-        itemObj.itemSerial = itemSerial;
 
         var itemLocation = $('input:radio[name="itemLocation' + currItemSort + '"]:checked').val();
-        if ($.trim(itemLocation) == "") {
-            alert("第" + i + "个构件位置未选择，请重新选择！");
-            return new Object();
+        if ($.trim(itemLocation) != "") {
+            itemObj.itemLocation = itemLocation;
         }
-        itemObj.itemLocation = itemLocation;
 
         var itemDirection = $('input:radio[name="itemDirection' + currItemSort + '"]:checked').val();
-        if ($.trim(itemDirection) == "") {
-            alert("第" + i + "个构件方向未选择，请重新选择！");
-            return new Object();
+        if ($.trim(itemDirection) != "") {
+            itemObj.itemDirection = itemDirection;
         }
-        itemObj.itemDirection = itemDirection;
 
         var crackArr = currItem.find('.crack_item_style').children('div');
         var crackList = [];
@@ -108,41 +106,31 @@ function buildSaveData() {
             var crackSort = currItemSort + currCrack.find('input').eq(0).val();
 
             var crackType = $('input:radio[name="crackType' + crackSort + '"]:checked').val();
-            if ($.trim(crackType) == "") {
-                alert("第" + i + "个构件,第" + j + "个裂缝项裂缝类型没有选择，请重新选择！");
-                return new Object();
+            if ($.trim(crackType) != "") {
+                crackObj.crackTyppe = crackType;
             }
-            crackObj.crackTyppe = crackType;
 
             if (crackType == '0') {
                 var wallDamageType = $('input:radio[name="wallDamageType' + crackSort + '"]:checked').val();
-                if ($.trim(wallDamageType) == "") {
-                    alert("第" + i + "个构件,第" + j + "个裂缝项墙面损坏类型没有选择，请重新选择！");
-                    return new Object();
+                if ($.trim(wallDamageType) != "") {
+                    crackObj.wallDamage = wallDamageType;
                 }
-                crackObj.wallDamage = wallDamageType;
             }
 
             var crackDirection = $('input:radio[name="crackDirection' + crackSort + '"]:checked').val();
-            if ($.trim(crackDirection) == "") {
-                alert("第" + i + "个构件,第" + j + "个裂缝项裂缝方向没有选择，请重新选择！");
-                return new Object();
+            if ($.trim(crackDirection) != "") {
+                crackObj.crackDirection = crackDirection;
             }
-            crackObj.crackDirection = crackDirection;
 
             var maxLength = $('#maxLength' + crackSort).val();
-            if (isNaN($.trim(maxLength))) {
-                alert("第" + i + "个构件,第" + j + "个裂缝项裂缝长度非法，请重新输入！");
-                return new Object();
+            if (!isNaN($.trim(maxLength))) {
+                crackObj.maxLength = maxLength;
             }
-            crackObj.maxLength = maxLength;
 
             var maxWidth = $('#maxWidth' + crackSort).val();
-            if (isNaN($.trim(maxLength))) {
-                alert("第" + i + "个构件,第" + j + "个裂缝项裂缝长度非法，请重新输入！");
-                return new Object();
+            if (!isNaN($.trim(maxLength))) {
+                crackObj.maxWidth = maxWidth;
             }
-            crackObj.maxWidth = maxWidth;
 
             var exampleImagePath = $('#exampleImagePath' + crackSort).val();
             crackObj.exampleImage = exampleImagePath;
@@ -277,8 +265,8 @@ layui.use(['form', 'upload'], function () {
         itemContent += '<div class="layui-col-md10">';
         itemContent += '<input type="radio" name="crackDirection' + sort + '0" value="0" >斜';
         itemContent += '<input type="radio" name="crackDirection' + sort + '0" value="1" >竖';
-        itemContent += '<input type="radio" name="crackDirection' + sort + '0" value="3" >水';
-        itemContent += '<input type="radio" name="crackDirection' + sort + '0" value="4" >不规则';
+        itemContent += '<input type="radio" name="crackDirection' + sort + '0" value="2" >水';
+        itemContent += '<input type="radio" name="crackDirection' + sort + '0" value="3" >不规则';
         itemContent += '</div>';
         itemContent += '</div>';
 
@@ -439,8 +427,8 @@ layui.use(['form', 'upload'], function () {
         itemContent += '<div class="layui-col-md10">';
         itemContent += '<input type="radio" name="crackDirection' + crackNum + '" value="0" >斜';
         itemContent += '<input type="radio" name="crackDirection' + crackNum + '" value="1" >竖';
-        itemContent += '<input type="radio" name="crackDirection' + crackNum + '" value="3" >水';
-        itemContent += '<input type="radio" name="crackDirection' + crackNum + '" value="4" >不规则';
+        itemContent += '<input type="radio" name="crackDirection' + crackNum + '" value="2" >水';
+        itemContent += '<input type="radio" name="crackDirection' + crackNum + '" value="3" >不规则';
         itemContent += '</div>';
         itemContent += '</div>';
 

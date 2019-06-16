@@ -177,8 +177,6 @@ function buildItem(item, sort) {
                 itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum + '" value="0" >龟裂';
                 itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum + '" value="1" >空鼓';
             }
-            itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum + '" value="0" >龟裂';
-            itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum + '" value="1" >空鼓';
             itemContent += '</div>';
             itemContent += '</div>';
 
@@ -362,14 +360,13 @@ function buildSaveData() {
         return new Object();
     }
     obj.checkDate = new Date(Date.parse(checkDate.replace(/-/g, "/"))).getTime();
-    ;
 
-    var masterName = $('#masterName').val();
+   /* var masterName = $('#masterName').val();
     if ($.trim(masterName) == "") {
         alert("户主姓名不能为空，请重新输入！");
         return new Object();
     }
-    obj.masterName = masterName;
+    obj.masterName = masterName;*/
 
     var houseNum = $('#houseNum').val();
     if ($.trim(houseNum) == "") {
