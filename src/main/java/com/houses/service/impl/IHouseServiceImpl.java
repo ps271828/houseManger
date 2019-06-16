@@ -35,6 +35,8 @@ public class IHouseServiceImpl implements IHouseService {
     @Autowired
     IHouseMainInfoDao iHouseMainInfoDao;
 
+    private static final String IMAGE_SUFFIX = "image.jpg";
+
     @Autowired
     IItemCrackDao iItemCrackDao;
 
@@ -163,22 +165,24 @@ public class IHouseServiceImpl implements IHouseService {
 
         iHouseMainInfoDao.updateHouseMainInfo(houseMainInfoVo);
 
-        //删除以前的构件信息
-        List<HouseItemVo> houseItemVoList = iHouseItemDao.queryItemById(houseMainInfoVo.getId());
-        List<Integer> houseIdList = new ArrayList<>();
-        houseIdList.add(houseMainInfoVo.getId());
-        iHouseItemDao.deteteItemInfoByHouseId(houseIdList);
-
-        //插入新的构件信息
+      //插入新的构件信息
         List<HouseItemVo> itemVoList = new ArrayList<>();
         for (HouseItemVo currItem : houseMainInfoVo.getHouseItemVoList()) {
             currItem.setHouseId(houseMainInfoVo.getId());
             try {
                 File fullImage = new File(currItem.getFullItemExampleImage());
+                //所有土拍你都要复制，然后删除原有图片
+                //图片路径不一致，复制图片
                 if (!currItem.getFullItemExampleImage().equals(UPLOAD_PATH + File.separator + fullImage.getName())) {
                     FileUtils.copyFile(fullImage, new File(UPLOAD_PATH + File.separator + fullImage.getName()));
+                    currItem.setFullItemExampleImage(UPLOAD_PATH + File.separator + fullImage.getName());
+                }else {
+                    //路径一致，换个马甲，删除原来的图片
+                    long time = System.currentTimeMillis();
+                    FileUtils.copyFile(fullImage, new File(UPLOAD_PATH + File.separator + time + IMAGE_SUFFIX));
+                    FileUtils.deleteQuietly(fullImage);
+                    currItem.setFullItemExampleImage(UPLOAD_PATH + File.separator + time + IMAGE_SUFFIX);
                 }
-                currItem.setFullItemExampleImage(UPLOAD_PATH + File.separator + fullImage.getName());
             } catch (IOException e) {
                 e.printStackTrace();
                 resultDto.setResultData(ResultDto.FAIL, "保存全景图失败！", null);
@@ -187,16 +191,19 @@ public class IHouseServiceImpl implements IHouseService {
             itemVoList.add(currItem);
         }
 
+        //删除以前的构件信息
+        List<HouseItemVo> houseItemVoList = iHouseItemDao.queryItemById(houseMainInfoVo.getId());
+        houseItemVoList.forEach(currItem -> FileUtils.deleteQuietly(new File(currItem.getFullItemExampleImage())));
+        List<Integer> houseIdList = new ArrayList<>();
+        houseIdList.add(houseMainInfoVo.getId());
+        if (!CollectionUtils.isEmpty(houseItemVoList)) {
+            iHouseItemDao.deteteItemInfoByHouseId(houseIdList);
+        }
+
         //保存构件信息
         if (!CollectionUtils.isEmpty(itemVoList)) {
             iHouseItemDao.batchSaveHouseItem(itemVoList);
         }
-
-
-        //删除先前的裂缝信息
-        List<Integer> itemIds = new ArrayList<>();
-        houseItemVoList.forEach(currItem -> itemIds.add(currItem.getId()));
-        iItemCrackDao.deleteCrackByItemIds(itemIds);
 
         //插入新的裂缝信息
         List<ItemCrackVo> itemCrackVoList = new ArrayList<>();
@@ -207,8 +214,13 @@ public class IHouseServiceImpl implements IHouseService {
                 try {
                     if (!currCrack.getExampleImage().equals(UPLOAD_PATH + File.separator + exampleImage.getName())) {
                         FileUtils.copyFile(exampleImage, new File(UPLOAD_PATH + File.separator + exampleImage.getName()));
+                        currCrack.setExampleImage(UPLOAD_PATH + File.separator + exampleImage.getName());
+                    }else {
+                        long time = System.currentTimeMillis();
+                        FileUtils.copyFile(exampleImage, new File(UPLOAD_PATH + File.separator + time + IMAGE_SUFFIX));
+                        FileUtils.deleteQuietly(exampleImage);
+                        currCrack.setExampleImage(UPLOAD_PATH + File.separator + time + IMAGE_SUFFIX);
                     }
-                    currCrack.setExampleImage(UPLOAD_PATH + File.separator + exampleImage.getName());
                 } catch (IOException e) {
                     e.printStackTrace();
                     resultDto.setResultData(ResultDto.FAIL, "保存示意图失败！", null);
@@ -216,6 +228,16 @@ public class IHouseServiceImpl implements IHouseService {
                 }
             }
             itemCrackVoList.addAll(currItem.getItemCrackVoList());
+        }
+
+        //删除先前的裂缝信息
+        List<Integer> itemIds = new ArrayList<>();
+        houseItemVoList.forEach(currItem -> itemIds.add(currItem.getId()));
+        if (!CollectionUtils.isEmpty(itemIds)) {
+            //删除老图片
+            List<ItemCrackVo> itemCrackVos = iItemCrackDao.queryCrackListByIdList(itemIds);
+            itemCrackVos.forEach(currCrack -> FileUtils.deleteQuietly(new File(currCrack.getExampleImage())));
+            iItemCrackDao.deleteCrackByItemIds(itemIds);
         }
 
         //保存裂缝项
@@ -241,10 +263,13 @@ public class IHouseServiceImpl implements IHouseService {
         houseItemVoList.forEach(currItem -> itemIds.add(currItem.getId()));
 
         //删除构件
-        iHouseItemDao.deteteItemInfoByHouseId(houseIds);
-
-        //删除裂缝
-        iItemCrackDao.deleteCrackByItemIds(itemIds);
+        if (!CollectionUtils.isEmpty(houseItemVoList)) {
+            iHouseItemDao.deteteItemInfoByHouseId(houseIds);
+            //删除裂缝
+            if (!CollectionUtils.isEmpty(itemIds)) {
+                iItemCrackDao.deleteCrackByItemIds(itemIds);
+            }
+        }
 
         resultDto.setResultData(ResultDto.SUCCESS, null, "删除房屋信息成功！");
         return resultDto;

@@ -27,6 +27,7 @@
         SELECT
         <include refid="allProp"/>
         FROM house_main_info
+        order by id desc
         limit #{start}, #{limit}
     </select>
 

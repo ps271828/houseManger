@@ -41,7 +41,7 @@ function initDefauleHouseInfo(data) {
     if (data.houseItemVoList != null) {
         for (var i = 0; i < data.houseItemVoList.length; i++) {
             var currItem = data.houseItemVoList[i];
-            content += buildItem(currItem, sort);
+            content += buildItem(currItem, i);
         }
         if (content != '') {
             $(content).insertBefore($('#projectItemInfo').children('div').last());
@@ -62,6 +62,7 @@ function initDefauleHouseInfo(data) {
 function buildItem(item, sort) {
     var itemContent = '<div id="item' + sort + '" class="layui-row" style="margin-top: 25px;">';
     itemContent += '<input type="hidden" value="' + sort + '" />';
+
     itemContent += '<div class="layui-row">';
     itemContent += '<div class="layui-col-md2">';
     itemContent += '构件序号';
@@ -130,10 +131,12 @@ function buildItem(item, sort) {
     itemContent += '</div>';
     itemContent += '</div>';
 
+
     if (item.itemCrackVoList != null) {
+        itemContent += '<div class="layui-row crack_item_style">';
+
         for (var crackNum = 0; crackNum < item.itemCrackVoList.length; crackNum++) {
             var currCrack = item.itemCrackVoList[crackNum];
-            itemContent += '<div class="layui-row crack_item_style">';
             itemContent += '<div id="crackItem' + sort + '' + crackNum + '" class="layui-row">';
             itemContent += '<input type="hidden" value="'+ crackNum +'" />';
 
@@ -256,15 +259,15 @@ function buildItem(item, sort) {
 
             itemContent += '</div>';
         }
+
+        itemContent += '<div class="layui-row">';
+        itemContent += '<div class="layui-col-md12" >';
+        itemContent += '<button onclick="addCrackItem(\'' + sort + '\')">新增裂缝项</button>';
+        itemContent += '</div>';
+        itemContent += '</div>';
+
+        itemContent += '</div>';
     }
-
-    itemContent += '<div class="layui-row">';
-    itemContent += '<div class="layui-col-md12" >';
-    itemContent += '<button onclick="addCrackItem(\'' + sort + '\')">新增裂缝项</button>';
-    itemContent += '</div>';
-    itemContent += '</div>';
-
-    itemContent += '</div>';
 
     itemContent += '<div class="layui-row">';
     itemContent += '<div class="layui-col-md2">';
@@ -306,6 +309,9 @@ function buildItem(item, sort) {
     itemContent += '<button onclick="deleteProjectItem(' + sort + ')">刪除此构件项</button>';
     itemContent += '</div>';
     itemContent += '</div>';
+
+    itemContent += '</div>';
+
     return itemContent;
 }
 

@@ -124,6 +124,19 @@ public class HouseController {
         return resultDto;
     }
 
+    @RequestMapping(value = "/deleteHouseInfoByIds")
+    @ResponseBody
+    public ResultDto<String> deleteHouseInfoByIds(@RequestBody List<Integer> houseIds) {
+        ResultDto<String> resultDto;
+        try {
+            resultDto = iHouseService.deleteHouseInfo(houseIds);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDto = new ResultDto<>(ResultDto.FAIL, null, "删除房屋信息失败");
+        }
+        return resultDto;
+    }
+
     /**
      * 获取房屋信息
      * @param houseMainInfoVo
