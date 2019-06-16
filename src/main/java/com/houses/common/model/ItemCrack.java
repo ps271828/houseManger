@@ -18,9 +18,9 @@ public class ItemCrack extends BaseDao {
 
     private Integer wallDamage;
 
-    private double maxLength;
+    private Double maxLength;
 
-    private double maxWidth;
+    private Double maxWidth;
 
     public double getMaxWidth() {
         return maxWidth;
@@ -100,15 +100,17 @@ public class ItemCrack extends BaseDao {
     @Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
+		
 		if("1".equals(crackType)) {
 //			 墙面 1--空鼓 2--龟裂 */
 			sb.append("墙面出现空鼓，");
 		}else if("2".equals(crackType)) {
 			sb.append("墙面出现龟裂，");
 		}
-		switch(wallDamage) {
+		if(wallDamage != null ) {
+			switch(wallDamage) {
 			case 1:
-			sb.append("裂缝方向为斜方向，");break;
+				sb.append("裂缝方向为斜方向，");break;
 			case 2:
 				sb.append("裂缝方向为竖直方向，");break;
 			case 3:
@@ -117,9 +119,16 @@ public class ItemCrack extends BaseDao {
 				sb.append("裂缝方向为不规则方向，");break;
 			default:
 				break;
+			}
 		}
-		sb.append("最大长度为" + maxLength + "毫米，");
-		sb.append("最大宽度为" + maxWidth + "毫米，");
+		if(maxLength != null) {
+			sb.append("最大长度为" + maxLength + "毫米。");
+		}
+		
+		if(maxWidth != null) {
+			sb.append("最大宽度为" + maxWidth + "毫米。");
+		}
+		
 		sb.append("如图");
 		return sb.toString();
 	}

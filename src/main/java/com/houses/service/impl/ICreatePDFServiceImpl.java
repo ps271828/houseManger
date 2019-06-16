@@ -2,6 +2,7 @@ package com.houses.service.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,6 +16,7 @@ import com.houses.common.vo.HouseItemVo;
 import com.houses.common.vo.HouseMainInfoVo;
 import com.houses.common.vo.ItemCrackVo;
 import com.houses.service.ICreatePDFService;
+import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
@@ -38,9 +40,9 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 		}
 		PdfPCell pdfPCell = new PdfPCell();
 		pdfPCell.addElement(pdfPTable);
-//		pdfPCell.setBorder(0);
-		pdfPCell.setBorder(Rectangle.NO_BORDER);
-		pdfPCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+//		pdfPCell.setBorder(1);
+//		pdfPCell.setBorder(Rectangle.NO_BORDER);
+//		pdfPCell.setHorizontalAlignment(Element.ALIGN_CENTER);
 		return pdfPCell;
 	}
 	
@@ -93,7 +95,8 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 			document.add(theme);
 			
 			//创建totalTable
-			PdfPTable totalTable = new PdfPTable(1);
+			int[] totalTableWidth = {100};
+			PdfPTable totalTable = getPdfPTable(1, totalTableWidth);
 			// 第一行
 			
 			int[] table1Width = { 20,30,20,30 };
@@ -109,7 +112,7 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String formatDate = sdf.format(datetime);
 			PdfPCell cell22 = new PdfPCell(new Phrase(formatDate, font));
-			cell12.setHorizontalAlignment(Element.ALIGN_CENTER);
+			cell22.setHorizontalAlignment(Element.ALIGN_CENTER);
 			PdfPCell cell23 = new PdfPCell(new Phrase("户主姓名", font));
 			PdfPCell cell24 = new PdfPCell(new Phrase(houseMainInfoVo.getMasterName(), font));
 			table1.addCell(cell11);
@@ -122,55 +125,110 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 			table1.addCell(cell24);
 			
 			PdfPCell cell1 = getPdfPTableCell(table1);
+			cell1.setBorder(Rectangle.NO_BORDER);
+			totalTable.addCell(cell1);
 			
-			/*
-			 * 第三行分三个table显示
-			 * 第一个显示裂缝的文字信息
-			 * 第二个显示图片信息
-			 * 第三个显示图片下面的文字描述
-			 */
-			PdfPTable table3 = new PdfPTable(1);
-			PdfPCell cell31 = new PdfPCell();
-			PdfPCell cell32 = new PdfPCell();
-			PdfPCell cell33 = new PdfPCell();
-			int[] table31Width = { 50,50 };
-			//显示裂缝文字描述
-			PdfPTable table31 =  new PdfPTable(1);
-			PdfPTable table32 =  getPdfPTable(2, table31Width);
-			PdfPTable table33 =  getPdfPTable(2, table31Width);
 			int i = 1;
 			for(HouseItemVo houseItemVo : houseMainInfoVo.getHouseItemVoList()) {
+				int[] table3Width = {100};
+				PdfPTable table3 = getPdfPTable(1,table3Width);
+				
 				List<ItemCrackVo> itemCrackVoList = houseItemVo.getItemCrackVoList();
-				for(ItemCrack itemCrackVo : itemCrackVoList) {
-					PdfPCell cell311 = new PdfPCell(new Phrase(houseItemVo.toString() + itemCrackVo.toString() + i++, font));
-					table31.addCell(cell311);
-					cell311.setBorder(Rectangle.NO_BORDER);
-					Image image = Image.getInstance(itemCrackVo.getExampleImage());
-					PdfPCell cell312 = new PdfPCell(image);
-					cell312.setBorder(Rectangle.NO_BORDER);
-					table32.addCell(image);
-					PdfPCell cell313 = new PdfPCell(new Phrase("图"+i, font));
-					cell313.setBorder(Rectangle.NO_BORDER);
-					table32.addCell(cell313);
-				}
+				//设置文字
+				PdfPCell houseTextCell = setCreakTextList(itemCrackVoList, houseItemVo.toString(),i);
+				table3.addCell(houseTextCell);
+				
+				//设置图片
+				PdfPCell houseImageCell = setCreakImageList(itemCrackVoList, houseItemVo.getFullItemExampleImage(),i);
+				table3.addCell(houseImageCell);
+				
+				
+				PdfPCell table3Cell = getPdfPTableCell(table3);
+				totalTable.addCell(table3Cell);			
 			}
-			cell31.addElement(table31);
-			cell32.addElement(table32);
-			cell33.addElement(table33);
 	
-			table3.addCell(cell31);
-			table3.addCell(cell32);
-			table3.addCell(cell33);
-			
-			PdfPCell cell3 = getPdfPTableCell(table3);
-			
-			totalTable.addCell(cell1);
-			totalTable.addCell(cell3);			
 			document.add(totalTable);
 			document.close();
 			writer.close();
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * 设置裂缝项图片文体描述
+	 * @param imagePath 图片路径
+	 * @param text 图片描述
+	 * @return
+	 * @throws Exception
+	 */
+	public static PdfPCell setCreakImageList(List<ItemCrackVo> itemCrackVoList,String imagePath,int i) throws Exception {
+		PdfPTable table1 = new PdfPTable(2);
+		for(ItemCrack itemCrackVo : itemCrackVoList) {
+			PdfPTable table11 = new PdfPTable(1);
+			PdfPCell creakItemCell = setCreakItem(itemCrackVo.getExampleImage(), "图" + i++);
+			table11.addCell(creakItemCell);
+			
+			PdfPCell table11Cell = getPdfPTableCell(table11);
+			table11Cell.setBorder(Rectangle.NO_BORDER);
+			table1.addCell(table11Cell);
+		}
+		
+		PdfPCell fullImageCell = setCreakItem(imagePath, "全景图");
+		table1.addCell(fullImageCell);
+		
+		PdfPCell table1Cell = getPdfPTableCell(table1);
+		table1Cell.setBorder(Rectangle.NO_BORDER);
+		return table1Cell;
+	}
+	
+	/**
+	 * 设置全景图
+	 * @param imagePath 图片路径
+	 * @param text 图片描述
+	 * @return
+	 * @throws Exception
+	 */
+	public static PdfPCell setCreakItem(String imagePath,String text) throws Exception {
+		PdfPTable table1 = new PdfPTable(1);
+		Image image;
+		try {
+			//图片
+			image = Image.getInstance(imagePath);
+			PdfPCell cell1= new PdfPCell(image,true);
+			cell1.setBorder(Rectangle.NO_BORDER);
+			
+			table1.addCell(cell1);
+			//图片对应的文字 
+			PdfPCell cell2 = new PdfPCell(new Phrase(text, getFont()));
+			cell2.setBorder(Rectangle.NO_BORDER);
+			cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+			table1.addCell(cell2);
+		} catch (BadElementException | IOException e) {
+			e.printStackTrace();
+		}
+		PdfPCell table1Cell = getPdfPTableCell(table1);
+		table1Cell.setBorder(Rectangle.NO_BORDER);
+		return table1Cell;
+	}
+	
+	
+	public static PdfPCell setCreakTextList(List<ItemCrackVo> itemCrackVoList,String text,int i) throws Exception {
+		PdfPTable table1 = new PdfPTable(1);
+		//设置构件项文字
+		PdfPCell cell1 = new PdfPCell(new Phrase(text, getFont()));
+		cell1.setBorder(Rectangle.NO_BORDER);
+		cell1.setHorizontalAlignment(Element.ALIGN_LEFT);
+		table1.addCell(cell1);
+		for(ItemCrack itemCrackVo : itemCrackVoList) {
+			PdfPCell cell2 = new PdfPCell(new Phrase(itemCrackVo.toString() + i++, getFont()));
+			cell2.setBorder(Rectangle.NO_BORDER);
+			cell2.setHorizontalAlignment(Element.ALIGN_LEFT);
+			table1.addCell(cell2);
+		}
+		
+		PdfPCell table1Cell = getPdfPTableCell(table1);
+		table1Cell.setBorder(Rectangle.NO_BORDER);
+		return table1Cell;
 	}
 }

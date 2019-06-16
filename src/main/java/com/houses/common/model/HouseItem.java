@@ -91,27 +91,31 @@ public class HouseItem extends BaseDao {
 //    private String itemLocation;
 //    	 */
     	sb.append(itemSerial).append(":");
-    	switch (itemDirection) {
-    	case 0:
-    		sb.append("构件方向为东方向，");break;
-    	case 1:
-    		sb.append("构件方向为南方向，");break;
-    	case 2:
-    		sb.append("构件方向为西方向，");break;
-    	case 3:
-    		sb.append("构件方向为北方向，");break;
+    	if(itemDirection != null) {
+    		switch (itemDirection) {
+    		case 0:
+    			sb.append("构件方向为东方向，");break;
+    		case 1:
+    			sb.append("构件方向为南方向，");break;
+    		case 2:
+    			sb.append("构件方向为西方向，");break;
+    		case 3:
+    			sb.append("构件方向为北方向，");break;
+    		}
     	}
     	
     	Integer itemLocationVal = Integer.valueOf(itemLocation);
-    	switch (itemLocationVal) {
-    	case 0:
-    		sb.append("构件位置为墙面，");break;
-    	case 1:
-    		sb.append("构件位置为天棚，");break;
-    	case 2:
-    		sb.append("构件位置为地面，");break;
+    	if(itemLocationVal != null) {
+    		switch (itemLocationVal) {
+    		case 0:
+    			sb.append("构件位置为墙面，");break;
+    		case 1:
+    			sb.append("构件位置为天棚，");break;
+    		case 2:
+    			sb.append("构件位置为地面，");break;
+    		}
     	}
-    	sb.append("具体见影像资料。");
+		sb.append(",具体见影像资料，取其中代表性进行观测。");
 		return sb.toString();
 	}
 }
