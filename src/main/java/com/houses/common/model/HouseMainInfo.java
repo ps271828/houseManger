@@ -31,6 +31,20 @@ public class HouseMainInfo extends BaseDao {
      */
     private Long checkDate;
 
+    public String getSignPath() {
+        return signPath;
+    }
+
+    public void setSignPath(String signPath) {
+        this.signPath = signPath;
+    }
+
+    /**
+
+     * 签名图片路径
+     */
+    private String signPath;
+
     public String getMasterName() {
         return masterName;
     }

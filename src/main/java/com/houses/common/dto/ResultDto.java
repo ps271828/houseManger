@@ -21,7 +21,7 @@ public class ResultDto <T> implements Serializable {
     /**
      * 失败结果码
      */
-    public static final String FAIL = "000000";
+    public static final String FAIL = "999999";
 
     /**
      * 状态码

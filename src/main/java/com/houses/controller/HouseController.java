@@ -6,6 +6,10 @@ import com.houses.common.model.HouseMainInfo;
 import com.houses.common.vo.HouseMainInfoVo;
 import com.houses.service.ICreatePDFService;
 import com.houses.service.IHouseService;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +19,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import sun.misc.BASE64Decoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +41,8 @@ public class HouseController {
     private static final String TEMP_PATH = System.getProperty("java.io.tmpdir");
 
     private static final String IMAGE_SUFFIX = "image.jpg";
+
+    private static final String PNG_SUFFIX = "signature.png";
 
     private static final Logger logger = LoggerFactory.getLogger(HouseController.class);
 
@@ -112,7 +119,7 @@ public class HouseController {
     @RequestMapping(value = "/uploadImage")
     @ResponseBody
     public ResultDto<String> uploadImage(MultipartFile file) {
-        ResultDto<String> resultDto = new ResultDto<>();
+        ResultDto<String> resultDto;
         String imagePath = TEMP_PATH + System.currentTimeMillis() + IMAGE_SUFFIX;
         try {
             FileUtils.copyInputStreamToFile(file.getInputStream(), new File(imagePath));
@@ -122,6 +129,38 @@ public class HouseController {
         }
         resultDto = new ResultDto<>(ResultDto.SUCCESS, null, imagePath);
         return resultDto;
+    }
+
+    @RequestMapping(value = "/saveSign")
+    @ResponseBody
+    public ResultDto<String> saveSign(String file) {
+        ResultDto<String> resultDto;
+        String imagePath = TEMP_PATH + System.currentTimeMillis() + PNG_SUFFIX;
+        try {
+            savePic(file, imagePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+            imagePath = "";
+        }
+        resultDto = new ResultDto<>(ResultDto.SUCCESS, null, imagePath);
+        return resultDto;
+    }
+
+    public void savePic(String base64, String path) throws IOException, TranscoderException {
+        byte[] imageByte;
+        BASE64Decoder decoder = new BASE64Decoder();
+        imageByte = decoder.decodeBuffer(base64);
+        ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
+        TranscoderInput inputSvgImage = new TranscoderInput(bis);
+        PNGTranscoder converter = new PNGTranscoder();
+
+        // 文件路径也可以根据自己的需求自定义
+        File outputfile = new File(path);
+
+        FileOutputStream pngFileStream = new FileOutputStream(outputfile);
+
+        TranscoderOutput outputPngImage = new TranscoderOutput(pngFileStream);
+        converter.transcode(inputSvgImage, outputPngImage);
     }
 
     @RequestMapping(value = "/deleteHouseInfoByIds")
@@ -166,7 +205,7 @@ public class HouseController {
      */
     @RequestMapping(value = "/downLoadPdf")
     public void doGet(HttpServletRequest request, HttpServletResponse response, Integer houseId)
-            throws ServletException, IOException {
+            throws IOException {
 
         HouseMainInfoVo houseMainInfoVo = new HouseMainInfoVo();
         houseMainInfoVo.setId(houseId);

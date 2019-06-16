@@ -9,6 +9,8 @@
 	</head>
 
 	<script type="text/javascript" src="../js/jquery-3.3.1.js"></script>
+	<script type="text/javascript" src="../js/jSignature/flashcanvas.js"></script>
+	<script type="text/javascript" src="../js/jSignature/jSignature.min.js"></script>
 	<script type="text/javascript" src="../js/layui/layui.js"></script>
 	<script type="text/javascript" src="../js/project/houseManger/addHouseInfo.js"></script>
 	<body>
@@ -201,7 +203,8 @@
 					</div>
 					<div class="layui-row" style="margin-top: 20px;">
 						<div class="layui-col-md12">
-							<button onclick="addProjectItem()">新增构件项</button>
+							<button onclick="addProjectItem()">新增构件项</button><br />
+							<button onclick="createSign()" style="margin-top: 10px">生成签名</button>
 						</div>
 					</div>
 				</div>
@@ -214,6 +217,14 @@
 						</div>
 					</div>
 				</div>
+			</div>
+		</div>
+		<div id="createSign" style="display: none;">
+			<div id="signature" style=";width: 500px;height: 400px;text-align: center"></div>
+			<div id="qianButton" style="text-align: center">
+				<input type="hidden" id="signPath" >
+				<input type="button" value="保存" onclick="saveSign()"/>
+				<input type="button" value="重写" onclick="clearSign()"/>
 			</div>
 		</div>
 	</body>

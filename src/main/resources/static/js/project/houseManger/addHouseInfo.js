@@ -8,6 +8,9 @@ $(function () {
             ,type: 'datetime'
         });
     })
+
+    //初始化签名
+    intiSign();
 })
 
 function deleteProjectItem(sort) {
@@ -148,6 +151,8 @@ function buildSaveData() {
         itemList.push(itemObj);
     }
     obj.houseItemVoList = itemList;
+
+    obj.signPath = $('#signPath').val();
     return obj;
 }
 
@@ -244,7 +249,7 @@ layui.use(['form', 'upload'], function () {
         itemContent += '</div>';
         itemContent += '<div class="layui-col-md10">';
         itemContent += '<input type="radio" name="crackType' + sort + '0" value="0" >装饰面层';
-        itemContent += '<input type="radio" name="crackType' + sort + '0" value="1" >构建';
+        itemContent += '<input type="radio" name="crackType' + sort + '0" value="1" >构件';
         itemContent += '</div>';
         itemContent += '</div>';
 
@@ -406,7 +411,7 @@ layui.use(['form', 'upload'], function () {
         itemContent += '</div>';
         itemContent += '<div class="layui-col-md10">';
         itemContent += '<input type="radio" name="crackType' + crackNum + '" value="0" >装饰面层';
-        itemContent += '<input type="radio" name="crackType' + crackNum + '" value="1" >构建';
+        itemContent += '<input type="radio" name="crackType' + crackNum + '" value="1" >构件';
         itemContent += '</div>';
         itemContent += '</div>';
 
@@ -481,3 +486,44 @@ layui.use(['form', 'upload'], function () {
         picupload("#exampleImage" + crackNum, "#preview" + crackNum);
     }
 })
+
+function createSign(){
+    layer.open({
+        type: 1,
+        shade: '0.3',
+        area: ['500px', '500px'],
+        title: '生成签名', //不显示标题
+        content: $('#createSign'), //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
+    });
+}
+
+function intiSign(){
+    var $sigdiv = $("#signature");
+    $sigdiv.jSignature({height:400,width:400,'decor-color':"white"});
+}
+
+function clearSign(){
+    var $sigdiv = $("#signature")
+    $sigdiv.jSignature("reset") // 这是重置签名的方法
+    $('#signPath').val();
+}
+
+function  saveSign() {
+    var data = $("#signature").jSignature("getData", "svgbase64");
+    var f = new FormData();
+    f.append("file", data[1]);
+    $.ajax({
+        url: "../houses/saveSign",
+        method: 'post',
+        data: f,
+        contentType: false,
+        processData: false,
+        success: function(data) {
+            if (data.code == "000000") {
+                $('#signPath').val(data.data);
+                alert('生成签名成功');
+            }else{
+                alert(data.info);
+            }
+        }})
+}
