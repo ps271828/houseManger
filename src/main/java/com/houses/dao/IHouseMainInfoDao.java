@@ -31,4 +31,17 @@ public interface IHouseMainInfoDao {
      * @return
      */
     List<HouseMainInfoVo> queryHousesPaged(HouseMainInfoVo houseMainInfoVo);
+
+    /**
+     * 更新房屋信息
+     * @param houseMainInfoVo
+     */
+    void updateHouseMainInfo(HouseMainInfoVo houseMainInfoVo);
+
+    /**
+     * 批量删除房屋信息
+     * @param ids
+     */
+    void deleteHouseInfoByIds(List<Integer> ids);
+
 }

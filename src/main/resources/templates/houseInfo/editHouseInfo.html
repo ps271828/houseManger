@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
 
 	<head>
 		<meta charset="utf-8" />
@@ -16,7 +16,7 @@
 			<div id="head"></div>
 			<div id="body">
 				<div id="projectMainInfio" class="layui-container">
-					<input id="houseId" value="${houseId}}">
+					<input type="hidden" id="houseId" name="houseId" th:value="${houseId}">
 					<div class="layui-row">
 						<div class="layui-col-md2">
 							<div style="width: 30%; display: inline-block;">工程名称</div>

@@ -20,4 +20,10 @@ public interface IItemCrackDao {
      * @return
      */
     List<ItemCrackVo> queryCrackListByIdList(List<Integer> idList);
+
+    /**
+     * 删除原先的构建信息
+     * @param itemIds
+     */
+    void deleteCrackByItemIds(List<Integer> itemIds);
 }

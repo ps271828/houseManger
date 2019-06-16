@@ -40,4 +40,18 @@
             )
         </foreach>
     </insert>
+
+    <delete id="deteteItemInfoByHouseId" parameterType="java.util.List">
+        delete from house_item where house_id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <select id="queryItemByHouseIds" parameterType="java.util.List" resultType="com.houses.common.vo.HouseItemVo">
+        select <include refid="allProp" /> from house_item where house_id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

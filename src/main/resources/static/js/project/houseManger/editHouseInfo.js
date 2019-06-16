@@ -1,18 +1,312 @@
 $(function () {
-
     initHouseInfo($('#houseId').val());
-
-    layui.use('laydate', function() {
+    layui.use('laydate', function () {
         var laydate = layui.laydate;
         laydate.render({
             elem: '#checkDate'
-            ,type: 'datetime'
+            , type: 'datetime'
         });
     })
 })
 
 function initHouseInfo(houseId) {
+    $.ajax({
+        url: "../houses/getHouseInfoByHouseMainInfoVo",
+        data: {id: houseId},
+        type: "post",
+        success: function (data) {
+            initDefauleHouseInfo(data.data);
+        }
+    })
+}
 
+function formatDate(now) {
+    var year = now.getFullYear();
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+    var date = ("0" + now.getDate()).slice(-2);
+    var hour = ("0" + (now.getHours())).slice(-2);
+    var minute = ("0" + (now.getMinutes())).slice(-2);
+    var second = now.getSeconds();
+    return year + "-" + month + "-" + date + "   " + hour + ":" + minute + ":" + second;
+}
+
+function initDefauleHouseInfo(data) {
+    $("#projectNmae").val(data.projectName);
+    $("#houseNum").val(data.houseNum);
+    $("#checkDate").val(formatDate(new Date(data.checkDate)));
+    $("#masterName").val(data.masterName);
+
+    //组装构建项
+    var content = "";
+    if (data.houseItemVoList != null) {
+        for (var i = 0; i < data.houseItemVoList.length; i++) {
+            var currItem = data.houseItemVoList[i];
+            content += buildItem(currItem, sort);
+        }
+        if (content != '') {
+            $(content).insertBefore($('#projectItemInfo').children('div').last());
+            for (var j = 0; j < data.houseItemVoList.length; j++) {
+                window.picupload('#fullExampleImage' + j, '#priview' + j);
+                var currHouseItem = data.houseItemVoList[j];
+                if (currHouseItem.itemCrackVoList != null) {
+                    for (var k = 0; k < currHouseItem.itemCrackVoList.length; k++) {
+                        window.picupload('#exampleImage' + j + k, '#preview' + j + k);
+                        crackTypeChange(j + '' + k);
+                    }
+                }
+            }
+        }
+    }
+}
+
+function buildItem(item, sort) {
+    var itemContent = '<div id="item' + sort + '" class="layui-row" style="margin-top: 25px;">';
+    itemContent += '<input type="hidden" value="' + sort + '" />';
+    itemContent += '<div class="layui-row">';
+    itemContent += '<div class="layui-col-md2">';
+    itemContent += '构件序号';
+    itemContent += '</div>';
+    itemContent += '<div class="layui-col-md10">';
+    itemContent += '<input id="serialNum' + sort + '" value="' + item.itemSerial + '" style="width: 98.5%;" />';
+    itemContent += '</div>';
+    itemContent += '</div>';
+
+    itemContent += '<div class="layui-row">';
+    itemContent += '<div class="layui-col-md2">';
+    itemContent += '构件位置';
+    itemContent += '</div>';
+    itemContent += '<div class="layui-col-md10">';
+    if (item.itemLocation == 0) {
+        itemContent += '<input type="radio" name="itemLocation' + sort + '" value="0" checked="checked" >墙面';
+        itemContent += '<input type="radio" name="itemLocation' + sort + '" value="1" >天棚';
+        itemContent += '<input type="radio" name="itemLocation' + sort + '" value="2" >地面';
+    } else if (item.itemDirection == 1) {
+        itemContent += '<input type="radio" name="itemLocation' + sort + '" value="0" >墙面';
+        itemContent += '<input type="radio" name="itemLocation' + sort + '" value="1" checked="checked" >天棚';
+        itemContent += '<input type="radio" name="itemLocation' + sort + '" value="2" >地面';
+    } else if (item.itemLocation == 2) {
+        itemContent += '<input type="radio" name="itemLocation' + sort + '" value="0" >墙面';
+        itemContent += '<input type="radio" name="itemLocation' + sort + '" value="1" >天棚';
+        itemContent += '<input type="radio" name="itemLocation' + sort + '" value="2" checked="checked" >地面';
+    } else {
+        itemContent += '<input type="radio" name="itemLocation' + sort + '" value="0" >墙面';
+        itemContent += '<input type="radio" name="itemLocation' + sort + '" value="1" >天棚';
+        itemContent += '<input type="radio" name="itemLocation' + sort + '" value="2" >地面';
+    }
+    itemContent += '</div>';
+    itemContent += '</div>';
+
+    itemContent += '<div class="layui-row">';
+    itemContent += '<div class="layui-col-md2">';
+    itemContent += '构件方向';
+    itemContent += '</div>';
+    itemContent += '<div class="layui-col-md10">';
+    if (item.itemDirection == 0) {
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="0" checked="checked" >东';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="1" >南';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="2" >西';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="3" >北';
+    } else if (item.itemDirection == 1) {
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="0" >东';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="1" checked="checked" >南';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="2" >西';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="3" >北';
+    } else if (item.itemDirection == 2) {
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="0" >东';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="1" >南';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="2" checked="checked" >西';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="3" >北';
+    } else if (item.itemDirection == 3) {
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="0" >东';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="1" >南';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="2" >西';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="3" checked="checked" >北';
+    } else {
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="0" >东';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="1" >南';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="2" >西';
+        itemContent += '<input type="radio" name="itemDirection' + sort + '" value="3" >北';
+    }
+    itemContent += '</div>';
+    itemContent += '</div>';
+
+    if (item.itemCrackVoList != null) {
+        for (var crackNum = 0; crackNum < item.itemCrackVoList.length; crackNum++) {
+            var currCrack = item.itemCrackVoList[crackNum];
+            itemContent += '<div class="layui-row crack_item_style">';
+            itemContent += '<div id="crackItem' + sort + '' + crackNum + '" class="layui-row">';
+            itemContent += '<input type="hidden" value="'+ crackNum +'" />';
+
+            itemContent += '<div class="layui-row">';
+            itemContent += '<div class="layui-col-md2">';
+            itemContent += '裂缝性质';
+            itemContent += '</div>';
+            itemContent += '<div class="layui-col-md10">';
+            if (currCrack.crackType == 0) {
+                itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" checked="checked" value="0" >装饰面层';
+                itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" value="1" >构建';
+            }else if (currCrack.crackType == 1) {
+                itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" value="0" >装饰面层';
+                itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" checked="checked" value="1" >构建';
+            }else {
+                itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" value="0" >装饰面层';
+                itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" value="1" >构建';
+            }
+            itemContent += '</div>';
+            itemContent += '</div>';
+
+            if (currCrack.crackType == 1) {
+                itemContent += '<div class="layui-row" style="display: none">';
+            }else {
+                itemContent += '<div class="layui-row">';
+            }
+            itemContent += '<div class="layui-col-md2">';
+            itemContent += '墙面';
+            itemContent += '</div>';
+            itemContent += '<div class="layui-col-md10">';
+            if (currCrack.wallDamage == 0) {
+                itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum+ '" checked="checked" value="0" >龟裂';
+                itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum + '" value="1" >空鼓';
+            }else if (currCrack.wallDamage == 1) {
+                itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum+ '" value="0" >龟裂';
+                itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum + '" checked="checked" value="1" >空鼓';
+            }else {
+                itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum + '" value="0" >龟裂';
+                itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum + '" value="1" >空鼓';
+            }
+            itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum + '" value="0" >龟裂';
+            itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum + '" value="1" >空鼓';
+            itemContent += '</div>';
+            itemContent += '</div>';
+
+            itemContent += '<div class="layui-row">';
+            itemContent += '<div class="layui-col-md2">';
+            itemContent += '裂缝方向';
+            itemContent += '</div>';
+            itemContent += '<div class="layui-col-md10">';
+            if (currCrack.crackDirection == 0) {
+                itemContent += '<input type="radio" checked="checked" name="crackDirection' + sort + '' + crackNum + '" value="0" >斜';
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="1" >竖';
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="2" >水';
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="3" >不规则';
+            }else if (currCrack.crackDirection == 1){
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="0" >斜';
+                itemContent += '<input type="radio" checked="checked" name="crackDirection' + sort + '' + crackNum + '" value="1" >竖';
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="2" >水';
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="3" >不规则';
+            }else if (currCrack.crackDirection == 2) {
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="0" >斜';
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="1" >竖';
+                itemContent += '<input type="radio" checked="checked" name="crackDirection' + sort + '' + crackNum + '" value="2" >水';
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="3" >不规则';
+            }else if (currCrack.crackDirection == 3) {
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="0" >斜';
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="1" >竖';
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="2" >水';
+                itemContent += '<input type="radio" checked="checked" name="crackDirection' + sort + '' + crackNum + '" value="3" >不规则';
+            }else {
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="0" >斜';
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="1" >竖';
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="2" >水';
+                itemContent += '<input type="radio" name="crackDirection' + sort + '' + crackNum + '" value="3" >不规则';
+            }
+            itemContent += '</div>';
+            itemContent += '</div>';
+
+            itemContent += '<div class="layui-row">';
+            itemContent += '<div class="layui-col-md2">';
+            itemContent += '最大长度mm';
+            itemContent += '</div>';
+            itemContent += '<div class="layui-col-md10">';
+            itemContent += '<input id="maxLength' + sort + '' + crackNum + '" value="' + currCrack.maxLength + '" style="width: 98.5%;" />';
+            itemContent += '</div>';
+            itemContent += '</div>';
+
+            itemContent += '<div class="layui-row">';
+            itemContent += '<div class="layui-col-md2">';
+            itemContent += '最大宽度mm';
+            itemContent += '</div>';
+            itemContent += '<div class="layui-col-md10">';
+            itemContent += '<input id="maxWidth' + sort + '' + crackNum + '" value="' + currCrack.maxWidth+ '" style="width: 98.5%;" />';
+            itemContent += '</div>';
+            itemContent += '</div>';
+
+            itemContent += '<div class="layui-row">';
+            itemContent += '<div class="layui-col-md2">';
+            itemContent += '示意图';
+            itemContent += '</div>';
+            itemContent += '<div class="layui-col-md10">';
+            itemContent += '<div style="border: #C2C2C2 1px solid;width: 100%;color: #C2C2C2;">';
+            itemContent += '<div id="exampleImage' + sort + '' + crackNum + '" style="display: inline-block;text-align: center;border: #C2C2C2 1px solid;margin-top: 5px;margin-bottom: 5px;">';
+            itemContent += '<input type="hidden" id="exampleImagePath' + sort + '' + crackNum + '" value="'+ currCrack.exampleImage +'" >';
+            itemContent += '<i class="layui-icon layui-icon-add-circle-fine" style="font-size: 80px;"></i><br />';
+            itemContent += '添加图片';
+            itemContent += '</div>';
+            itemContent += '<div id="preview' + sort + '' + crackNum +  '" style="display: inline-block;vertical-align: top;margin-top: 5px;">';
+            itemContent += '</div>';
+            itemContent += '</div>';
+            itemContent += '</div>';
+            itemContent += '</div>';
+
+            itemContent += '<div class="layui-row">';
+            itemContent += '<div class="layui-col-md12" style="text-align: right">';
+            itemContent += '<button onclick="deleteCrackItem(\'' + sort + '' + crackNum +  '\')">刪除裂缝项</button>';
+            itemContent += '</div>';
+            itemContent += '</div>';
+
+            itemContent += '</div>';
+        }
+    }
+
+    itemContent += '<div class="layui-row">';
+    itemContent += '<div class="layui-col-md12" >';
+    itemContent += '<button onclick="addCrackItem(\'' + sort + '\')">新增裂缝项</button>';
+    itemContent += '</div>';
+    itemContent += '</div>';
+
+    itemContent += '</div>';
+
+    itemContent += '<div class="layui-row">';
+    itemContent += '<div class="layui-col-md2">';
+    itemContent += '全景图';
+    itemContent += '</div>';
+    itemContent += '<div class="layui-col-md10">';
+
+    itemContent += '<div style="border: #C2C2C2 1px solid;width: 100%;color: #C2C2C2;">';
+    itemContent += '<div id="fullExampleImage' + sort + '" style="display: inline-block;text-align: center;border: #C2C2C2 1px solid;margin-top: 5px;margin-bottom: 5px;">';
+    itemContent += '<input type="hidden" id="fullExampleImagePath' + sort + '" value="' + item.fullItemExampleImage + '">';
+    itemContent += '<i class="layui-icon layui-icon-add-circle-fine" style="font-size: 80px;"></i><br />';
+    itemContent += '</div>';
+    itemContent += '<div id="preview' + sort + '" style="display: inline-block;vertical-align: top;margin-top: 5px;">';
+    itemContent += '</div>';
+    itemContent += '</div>';
+    itemContent += '</div>';
+    itemContent += '</div>';
+
+    itemContent += '<div class="layui-row">';
+    itemContent += '<div class="layui-col-md2">';
+    itemContent += '其他';
+    itemContent += '</div>';
+    itemContent += '<div class="layui-col-md10">';
+    itemContent += '<input id="others' + sort + '" value="' + item.comment + '" list="othersList' + sort + '" style="width: 98.5%;" />';
+    itemContent += '<datalist id="othersList' + sort + '">';
+    itemContent += '<option value="吊顶拼接缝">';
+    itemContent += '<option value="吊顶与墙面交接缝">';
+    itemContent += '<option value="吊顶与楼板交接缝">';
+    itemContent += '<option value="面砖开裂">';
+    itemContent += '<option value="地砖开裂">';
+    itemContent += '<option value="台面拼接缝">';
+    itemContent += '<option value="门框交接缝">';
+    itemContent += '</datalist>';
+    itemContent += '</div>';
+    itemContent += '</div>';
+
+    itemContent += '<div class="layui-row">';
+    itemContent += '<div class="layui-col-md12" style="text-align: right">';
+    itemContent += '<button onclick="deleteProjectItem(' + sort + ')">刪除此构件项</button>';
+    itemContent += '</div>';
+    itemContent += '</div>';
+    return itemContent;
 }
 
 function deleteProjectItem(sort) {
@@ -28,14 +322,14 @@ function saveProjectInfo() {
         return;
     }
     $.ajax({
-        url : "../houses/saveHouseInfo",
-        data : JSON.stringify(param),
-        contentType : 'application/json',
-        type : "post",
-        success : function (data) {
+        url: "../houses/updateHouseInfoById",
+        data: JSON.stringify(param),
+        contentType: 'application/json',
+        type: "post",
+        success: function (data) {
             if (data.code == '000000') {
                 alert(data.data)
-            }else {
+            } else {
                 alert(data.info);
             }
         }
@@ -49,8 +343,11 @@ function buildSaveData() {
     if ($.trim(projectNmae) == "") {
         alert("工程名称不能为空，请重新输入！");
         return new Object();
-  ``  }
+        ``
+    }
     obj.projectName = projectNmae;
+
+    obj.id = $('#houseId').val();
 
     //检测日期
     var checkDate = $('#checkDate').val();
@@ -58,7 +355,8 @@ function buildSaveData() {
         alert("检测日期不能为空，请重新输入！");
         return new Object();
     }
-    obj.checkDate = new Date(Date.parse(checkDate.replace(/-/g, "/"))).getTime();;
+    obj.checkDate = new Date(Date.parse(checkDate.replace(/-/g, "/"))).getTime();
+    ;
 
     var masterName = $('#masterName').val();
     if ($.trim(masterName) == "") {
@@ -83,25 +381,19 @@ function buildSaveData() {
         var itemObj = new Object();
 
         var itemSerial = $('#serialNum' + currItemSort).val();
-        if ($.trim(itemSerial) == "") {
-            alert("第" + i + "个构件序列号为空，请重新输入！");
-            return new Object();
+        if ($.trim(itemSerial) != "") {
+            itemObj.itemSerial = itemSerial;
         }
-        itemObj.itemSerial = itemSerial;
 
         var itemLocation = $('input:radio[name="itemLocation' + currItemSort + '"]:checked').val();
-        if ($.trim(itemLocation) == "") {
-            alert("第" + i + "个构件位置未选择，请重新选择！");
-            return new Object();
+        if ($.trim(itemLocation) != "") {
+            itemObj.itemLocation = itemLocation;
         }
-        itemObj.itemLocation = itemLocation;
 
         var itemDirection = $('input:radio[name="itemDirection' + currItemSort + '"]:checked').val();
-        if ($.trim(itemDirection) == "") {
-            alert("第" + i + "个构件方向未选择，请重新选择！");
-            return new Object();
+        if ($.trim(itemDirection) != "") {
+            itemObj.itemDirection = itemDirection;
         }
-        itemObj.itemDirection = itemDirection;
 
         var crackArr = currItem.find('.crack_item_style').children('div');
         var crackList = [];
@@ -113,41 +405,31 @@ function buildSaveData() {
             var crackSort = currItemSort + currCrack.find('input').eq(0).val();
 
             var crackType = $('input:radio[name="crackType' + crackSort + '"]:checked').val();
-            if ($.trim(crackType) == "") {
-                alert("第" + i + "个构件,第" + j + "个裂缝项裂缝类型没有选择，请重新选择！");
-                return new Object();
+            if ($.trim(crackType) != "") {
+                crackObj.crackTyppe = crackType;
             }
-            crackObj.crackTyppe = crackType;
 
             if (crackType == '0') {
                 var wallDamageType = $('input:radio[name="wallDamageType' + crackSort + '"]:checked').val();
-                if ($.trim(wallDamageType) == "") {
-                    alert("第" + i + "个构件,第" + j + "个裂缝项墙面损坏类型没有选择，请重新选择！");
-                    return new Object();
+                if ($.trim(wallDamageType) != "") {
+                    crackObj.wallDamage = wallDamageType;
                 }
-                crackObj.wallDamage = wallDamageType;
             }
 
             var crackDirection = $('input:radio[name="crackDirection' + crackSort + '"]:checked').val();
-            if ($.trim(crackDirection) == "") {
-                alert("第" + i + "个构件,第" + j + "个裂缝项裂缝方向没有选择，请重新选择！");
-                return new Object();
+            if ($.trim(crackDirection) != "") {
+                crackObj.crackDirection = crackDirection;
             }
-            crackObj.crackDirection = crackDirection;
 
             var maxLength = $('#maxLength' + crackSort).val();
-            if (isNaN($.trim(maxLength))) {
-                alert("第" + i + "个构件,第" + j + "个裂缝项裂缝长度非法，请重新输入！");
-                return new Object();
+            if (!isNaN($.trim(maxLength))) {
+                crackObj.maxLength = maxLength;
             }
-            crackObj.maxLength = maxLength;
 
             var maxWidth = $('#maxWidth' + crackSort).val();
-            if (isNaN($.trim(maxLength))) {
-                alert("第" + i + "个构件,第" + j + "个裂缝项裂缝长度非法，请重新输入！");
-                return new Object();
+            if (!isNaN($.trim(maxLength))) {
+                crackObj.maxWidth = maxWidth;
             }
-            crackObj.maxWidth = maxWidth;
 
             var exampleImagePath = $('#exampleImagePath' + crackSort).val();
             crackObj.exampleImage = exampleImagePath;
@@ -186,12 +468,9 @@ layui.use(['form', 'upload'], function () {
     var $ = layui.jquery,
         upload = layui.upload;
 
-    picupload("#exampleImage00", "#preview00");
-    picupload("#fullExampleImage0", "#preview0");
-
-    function picupload(id, pic) {
+    window.picupload = function(id, pic) {
         upload.render({
-            elem : id,
+            elem: id,
             url: "../houses/uploadImage",
             choose: function (obj) {
                 //预读本地文件示例，不支持ie8
@@ -207,6 +486,9 @@ layui.use(['form', 'upload'], function () {
             }
         });
     }
+
+    window.picupload("#exampleImage00", "#preview00");
+    window.picupload("#fullExampleImage0", "#preview0");
 
     var sort = 0;
 
@@ -311,12 +593,12 @@ layui.use(['form', 'upload'], function () {
         itemContent += '</div>';
         itemContent += '<div class="layui-col-md10">';
         itemContent += '<div style="border: #C2C2C2 1px solid;width: 100%;color: #C2C2C2;">';
-        itemContent += '<div id="exampleImage'+ sort +'0" style="display: inline-block;text-align: center;border: #C2C2C2 1px solid;margin-top: 5px;margin-bottom: 5px;">';
-        itemContent += '<input type="hidden" id="exampleImagePath'+ sort +'0" value="" >';
+        itemContent += '<div id="exampleImage' + sort + '0" style="display: inline-block;text-align: center;border: #C2C2C2 1px solid;margin-top: 5px;margin-bottom: 5px;">';
+        itemContent += '<input type="hidden" id="exampleImagePath' + sort + '0" value="" >';
         itemContent += '<i class="layui-icon layui-icon-add-circle-fine" style="font-size: 80px;"></i><br />';
         itemContent += '添加图片';
         itemContent += '</div>';
-        itemContent += '<div id="preview'+ sort +'0" style="display: inline-block;vertical-align: top;margin-top: 5px;">';
+        itemContent += '<div id="preview' + sort + '0" style="display: inline-block;vertical-align: top;margin-top: 5px;">';
         itemContent += '</div>';
         itemContent += '</div>';
         itemContent += '</div>';
@@ -346,7 +628,7 @@ layui.use(['form', 'upload'], function () {
 
         itemContent += '<div style="border: #C2C2C2 1px solid;width: 100%;color: #C2C2C2;">';
         itemContent += '<div id="fullExampleImage' + sort + '" style="display: inline-block;text-align: center;border: #C2C2C2 1px solid;margin-top: 5px;margin-bottom: 5px;">';
-        itemContent += '<input type="hidden" id="fullExampleImagePath'+ sort +'" value="">';
+        itemContent += '<input type="hidden" id="fullExampleImagePath' + sort + '" value="">';
         itemContent += '<i class="layui-icon layui-icon-add-circle-fine" style="font-size: 80px;"></i><br />';
         itemContent += '</div>';
         itemContent += '<div id="preview' + sort + '" style="display: inline-block;vertical-align: top;margin-top: 5px;">';
@@ -360,8 +642,8 @@ layui.use(['form', 'upload'], function () {
         itemContent += '其他';
         itemContent += '</div>';
         itemContent += '<div class="layui-col-md10">';
-        itemContent += '<input id="others' + sort + '" list="othersList'+ sort +'" style="width: 98.5%;" />';
-        itemContent += '<datalist id="othersList'+ sort +'">';
+        itemContent += '<input id="others' + sort + '" list="othersList' + sort + '" style="width: 98.5%;" />';
+        itemContent += '<datalist id="othersList' + sort + '">';
         itemContent += '<option value="吊顶拼接缝">';
         itemContent += '<option value="吊顶与墙面交接缝">';
         itemContent += '<option value="吊顶与楼板交接缝">';
@@ -392,12 +674,12 @@ layui.use(['form', 'upload'], function () {
         var item = buildAddItem();
         var projectItemInfoChild = $("#projectItemInfo").children("div");
         $(item).insertBefore(projectItemInfoChild.eq(projectItemInfoChild.length - 1));
-        picupload("#fullExampleImage" + sort, "#preview" + sort);
-        picupload("#exampleImage" + sort + "0", "#preview" + sort + "0");
+        window.picupload("#fullExampleImage" + sort, "#preview" + sort);
+        window.picupload("#exampleImage" + sort + "0", "#preview" + sort + "0");
         crackTypeChange(sort + "0");
-}
+    }
 
-    window.addCrackItem =  function(itemNum) {
+    window.addCrackItem = function (itemNum) {
         //获取对应构件的裂缝的序号
         var currSort = '0';
         var lastSecondDiv = undefined;
@@ -471,12 +753,12 @@ layui.use(['form', 'upload'], function () {
         itemContent += '</div>';
         itemContent += '<div class="layui-col-md10">';
         itemContent += '<div style="border: #C2C2C2 1px solid;width: 100%;color: #C2C2C2;">';
-        itemContent += '<div id="exampleImage'+ crackNum +'" style="display: inline-block;text-align: center;border: #C2C2C2 1px solid;margin-top: 5px;margin-bottom: 5px;">';
-        itemContent += '<input type="hidden" id="exampleImagePath'+ crackNum +'" value="" >';
+        itemContent += '<div id="exampleImage' + crackNum + '" style="display: inline-block;text-align: center;border: #C2C2C2 1px solid;margin-top: 5px;margin-bottom: 5px;">';
+        itemContent += '<input type="hidden" id="exampleImagePath' + crackNum + '" value="" >';
         itemContent += '<i class="layui-icon layui-icon-add-circle-fine" style="font-size: 80px;"></i><br />';
         itemContent += '添加图片';
         itemContent += '</div>';
-        itemContent += '<div id="preview'+ crackNum +'" style="display: inline-block;vertical-align: top;margin-top: 5px;">';
+        itemContent += '<div id="preview' + crackNum + '" style="display: inline-block;vertical-align: top;margin-top: 5px;">';
         itemContent += '</div>';
         itemContent += '</div>';
         itemContent += '</div>';
@@ -493,6 +775,6 @@ layui.use(['form', 'upload'], function () {
         $(itemContent).insertBefore(lastSecondDiv.last());
         lastSecondDiv.eq(lastSecondDiv.length - 2).find('input').eq(0).val(crackNum);
         crackTypeChange(crackNum);
-        picupload("#exampleImage" + crackNum, "#preview" + crackNum);
+        window.picupload("#exampleImage" + crackNum, "#preview" + crackNum);
     }
 })

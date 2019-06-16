@@ -21,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -47,7 +48,6 @@ public class IHouseServiceImpl implements IHouseService {
 
     @Override
     public List<HouseMainInfo> selectHouseMainInfoById(Integer id) {
-        // return iHouseMainInfoDao.selectHouseMainInfoById(1);
         return null;
     }
 
@@ -63,10 +63,9 @@ public class IHouseServiceImpl implements IHouseService {
         List<HouseItemVo> itemVoList = new ArrayList<>();
         for (HouseItemVo currItem : houseMainInfoVo.getHouseItemVoList()) {
             currItem.setHouseId(houseMainInfoVo.getId());
-            File fullImage = new File(currItem.getFullItemExampleImage());
             try {
+                File fullImage = new File(currItem.getFullItemExampleImage());
                 FileUtils.copyFile(fullImage, new File(UPLOAD_PATH + File.separator + fullImage.getName()));
-                FileUtils.deleteQuietly(fullImage);
                 currItem.setFullItemExampleImage(UPLOAD_PATH + File.separator + fullImage.getName());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -89,7 +88,6 @@ public class IHouseServiceImpl implements IHouseService {
                 File exampleImage = new File(currCrack.getExampleImage());
                 try {
                     FileUtils.copyFile(exampleImage, new File(UPLOAD_PATH + File.separator + exampleImage.getName()));
-                    FileUtils.deleteQuietly(exampleImage);
                     currCrack.setExampleImage(UPLOAD_PATH + File.separator + exampleImage.getName());
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -154,6 +152,101 @@ public class IHouseServiceImpl implements IHouseService {
 
         houseMainInfoVo.setHouseItemVoList(houseItemVoList);
         resultDto.setResultData(ResultDto.SUCCESS, null, houseMainInfoVo);
+        return resultDto;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultDto<String> updateHouseInfoById(HouseMainInfoVo houseMainInfoVo) {
+        //更新房屋主要信息
+        ResultDto<String> resultDto = new ResultDto<>();
+
+        iHouseMainInfoDao.updateHouseMainInfo(houseMainInfoVo);
+
+        //删除以前的构件信息
+        List<HouseItemVo> houseItemVoList = iHouseItemDao.queryItemById(houseMainInfoVo.getId());
+        List<Integer> houseIdList = new ArrayList<>();
+        houseIdList.add(houseMainInfoVo.getId());
+        iHouseItemDao.deteteItemInfoByHouseId(houseIdList);
+
+        //插入新的构件信息
+        List<HouseItemVo> itemVoList = new ArrayList<>();
+        for (HouseItemVo currItem : houseMainInfoVo.getHouseItemVoList()) {
+            currItem.setHouseId(houseMainInfoVo.getId());
+            try {
+                File fullImage = new File(currItem.getFullItemExampleImage());
+                if (!currItem.getFullItemExampleImage().equals(UPLOAD_PATH + File.separator + fullImage.getName())) {
+                    FileUtils.copyFile(fullImage, new File(UPLOAD_PATH + File.separator + fullImage.getName()));
+                }
+                currItem.setFullItemExampleImage(UPLOAD_PATH + File.separator + fullImage.getName());
+            } catch (IOException e) {
+                e.printStackTrace();
+                resultDto.setResultData(ResultDto.FAIL, "保存全景图失败！", null);
+                return resultDto;
+            }
+            itemVoList.add(currItem);
+        }
+
+        //保存构件信息
+        if (!CollectionUtils.isEmpty(itemVoList)) {
+            iHouseItemDao.batchSaveHouseItem(itemVoList);
+        }
+
+
+        //删除先前的裂缝信息
+        List<Integer> itemIds = new ArrayList<>();
+        houseItemVoList.forEach(currItem -> itemIds.add(currItem.getId()));
+        iItemCrackDao.deleteCrackByItemIds(itemIds);
+
+        //插入新的裂缝信息
+        List<ItemCrackVo> itemCrackVoList = new ArrayList<>();
+        for (HouseItemVo currItem : itemVoList) {
+            for (ItemCrackVo currCrack : currItem.getItemCrackVoList()) {
+                currCrack.setItemId(currItem.getId());
+                File exampleImage = new File(currCrack.getExampleImage());
+                try {
+                    if (!currCrack.getExampleImage().equals(UPLOAD_PATH + File.separator + exampleImage.getName())) {
+                        FileUtils.copyFile(exampleImage, new File(UPLOAD_PATH + File.separator + exampleImage.getName()));
+                    }
+                    currCrack.setExampleImage(UPLOAD_PATH + File.separator + exampleImage.getName());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    resultDto.setResultData(ResultDto.FAIL, "保存示意图失败！", null);
+                    return resultDto;
+                }
+            }
+            itemCrackVoList.addAll(currItem.getItemCrackVoList());
+        }
+
+        //保存裂缝项
+        if (!CollectionUtils.isEmpty(itemCrackVoList)) {
+            iItemCrackDao.batchSaveItemCrack(itemCrackVoList);
+        }
+
+        resultDto.setResultData(ResultDto.SUCCESS, null, "更新房屋信息成功！");
+        return resultDto;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultDto<String> deleteHouseInfo(List<Integer> houseIds) {
+        ResultDto<String> resultDto = new ResultDto<>();
+
+        iHouseMainInfoDao.deleteHouseInfoByIds(houseIds);
+
+        //查找其下的构件信息
+        List<HouseItemVo> houseItemVoList = iHouseItemDao.queryItemByHouseIds(houseIds);
+
+        List<Integer> itemIds = new ArrayList<>();
+        houseItemVoList.forEach(currItem -> itemIds.add(currItem.getId()));
+
+        //删除构件
+        iHouseItemDao.deteteItemInfoByHouseId(houseIds);
+
+        //删除裂缝
+        iItemCrackDao.deleteCrackByItemIds(itemIds);
+
+        resultDto.setResultData(ResultDto.SUCCESS, null, "删除房屋信息成功！");
         return resultDto;
     }
 }

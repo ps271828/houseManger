@@ -37,4 +37,18 @@ public interface IHouseService {
      * @return
      */
     ResultDto<HouseMainInfoVo> getHouseInfoByHouseMainInfoVo(HouseMainInfoVo houseMainInfoVo);
+
+    /**
+     * 更新房屋信息
+     * @param houseMainInfoVo
+     * @return
+     */
+    ResultDto<String> updateHouseInfoById(HouseMainInfoVo houseMainInfoVo);
+
+    /**
+     *
+     * @param houseId
+     * @return
+     */
+    ResultDto<String> deleteHouseInfo(List<Integer> houseId);
 }

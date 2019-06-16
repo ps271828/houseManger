@@ -20,61 +20,34 @@
     </select>
 
     <insert id="batchSaveItemCrack" parameterType="java.util.List">
-        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
         insert into item_crack
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="item.id != null">
-                id,
-            </if>
-            <if test="item.itemId != null">
-                item_id,
-            </if>
-            <if test="item.crackType != null">
-                crack_type,
-            </if>
-            <if test="item.wallDamage != null">
-                wall,
-            </if>
-            <if test="item.maxLength != null">
-                max_length,
-            </if>
-            <if test="item.maxWidth != null">
-                max_width,
-            </if>
-            <if test="item.exampleImage != '' and item.exampleImage != null">
-                example_image,
-            </if>
-            <if test="item.crackDirection != '' and item.crackDirection != null">
-                crack_direction,
-            </if>
-        </trim>
+        (
+        item_id,
+        crack_type,
+        wall,
+        max_length,
+        max_width,
+        example_image,
+        crack_direction
+        )
         values
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="item.id != null">
-                #{item.id},
-            </if>
-            <if test="item.itemId != null">
-                #{item.itemId},
-            </if>
-            <if test="item.crackType != null">
-                #{item.crackType},
-            </if>
-            <if test="item.wallDamage != null">
-                #{item.wallDamage},
-            </if>
-            <if test="item.maxLength != null">
-                #{item.maxLength},
-            </if>
-            <if test="item.maxWidth != null">
-                ${item.maxWidth},
-            </if>
-            <if test="item.exampleImage != '' and item.exampleImage != null">
-                <![CDATA[#{item.exampleImage}]]> ,
-            </if>
-            <if test="item.crackDirection != '' and item.crackDirection != null">
-                #{item.crackDirection},
-            </if>
-        </trim>
+        <foreach collection="list" item="item" index="index" open="" close="" separator=",">
+            (
+            #{item.itemId},
+            #{item.crackType},
+            #{item.wallDamage},
+            #{item.maxLength},
+            ${item.maxWidth},
+            #{item.exampleImage} ,
+            #{item.crackDirection}
+            )
         </foreach>
     </insert>
+    
+    <delete id="deleteCrackByItemIds" parameterType="java.util.List">
+        delete from item_crack where item_id in
+          <foreach collection="list" open="(" close=")" item="item" separator=",">
+            #{item}
+          </foreach>
+    </delete>
 </mapper>
