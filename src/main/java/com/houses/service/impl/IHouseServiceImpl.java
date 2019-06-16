@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +37,8 @@ public class IHouseServiceImpl implements IHouseService {
     IHouseMainInfoDao iHouseMainInfoDao;
 
     private static final String IMAGE_SUFFIX = "image.jpg";
+
+    private static final String PNG_SUFFIX = "signature.png";
 
     @Autowired
     IItemCrackDao iItemCrackDao;
@@ -58,6 +61,20 @@ public class IHouseServiceImpl implements IHouseService {
     public ResultDto<String> saveHouseInfo(HouseMainInfoVo houseMainInfoVo) {
         ResultDto<String> resultDto = new ResultDto<>();
 
+        if (StringUtils.isEmpty(houseMainInfoVo.getSignPath())) {
+            try {
+                File fullImage = new File(houseMainInfoVo.getSignPath());
+                if (fullImage.isFile()) {
+                    FileUtils.copyFile(fullImage, new File(UPLOAD_PATH + File.separator + fullImage.getName()));
+                    houseMainInfoVo.setSignPath(UPLOAD_PATH + File.separator + fullImage.getName());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                resultDto.setResultData(ResultDto.FAIL, "保存签名失败！", null);
+                return resultDto;
+            }
+        }
+
         //保存房屋信息
         iHouseMainInfoDao.saveHouseMainInfo(houseMainInfoVo);
 
@@ -67,8 +84,10 @@ public class IHouseServiceImpl implements IHouseService {
             currItem.setHouseId(houseMainInfoVo.getId());
             try {
                 File fullImage = new File(currItem.getFullItemExampleImage());
-                FileUtils.copyFile(fullImage, new File(UPLOAD_PATH + File.separator + fullImage.getName()));
-                currItem.setFullItemExampleImage(UPLOAD_PATH + File.separator + fullImage.getName());
+                if (fullImage.isFile()) {
+                    FileUtils.copyFile(fullImage, new File(UPLOAD_PATH + File.separator + fullImage.getName()));
+                    currItem.setFullItemExampleImage(UPLOAD_PATH + File.separator + fullImage.getName());
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 resultDto.setResultData(ResultDto.FAIL, "保存全景图失败！", null);
@@ -89,8 +108,10 @@ public class IHouseServiceImpl implements IHouseService {
                 currCrack.setItemId(currItem.getId());
                 File exampleImage = new File(currCrack.getExampleImage());
                 try {
-                    FileUtils.copyFile(exampleImage, new File(UPLOAD_PATH + File.separator + exampleImage.getName()));
-                    currCrack.setExampleImage(UPLOAD_PATH + File.separator + exampleImage.getName());
+                    if (exampleImage.isFile()) {
+                        FileUtils.copyFile(exampleImage, new File(UPLOAD_PATH + File.separator + exampleImage.getName()));
+                        currCrack.setExampleImage(UPLOAD_PATH + File.separator + exampleImage.getName());
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                     resultDto.setResultData(ResultDto.FAIL, "保存示意图失败！", null);
@@ -144,7 +165,7 @@ public class IHouseServiceImpl implements IHouseService {
             for (HouseItemVo currItem : houseItemVoList) {
                 List<ItemCrackVo> crackVoList = new ArrayList<>();
                 for (ItemCrackVo currCrack : itemCrackVoList) {
-                    if (currItem.getId() == currCrack.getItemId()) {
+                    if (currItem.getId().equals(currCrack.getItemId())) {
                         crackVoList.add(currCrack);
                     }
                 }
@@ -173,15 +194,17 @@ public class IHouseServiceImpl implements IHouseService {
                 File fullImage = new File(currItem.getFullItemExampleImage());
                 //所有土拍你都要复制，然后删除原有图片
                 //图片路径不一致，复制图片
-                if (!currItem.getFullItemExampleImage().equals(UPLOAD_PATH + File.separator + fullImage.getName())) {
-                    FileUtils.copyFile(fullImage, new File(UPLOAD_PATH + File.separator + fullImage.getName()));
-                    currItem.setFullItemExampleImage(UPLOAD_PATH + File.separator + fullImage.getName());
-                }else {
-                    //路径一致，换个马甲，删除原来的图片
-                    long time = System.currentTimeMillis();
-                    FileUtils.copyFile(fullImage, new File(UPLOAD_PATH + File.separator + time + IMAGE_SUFFIX));
-                    FileUtils.deleteQuietly(fullImage);
-                    currItem.setFullItemExampleImage(UPLOAD_PATH + File.separator + time + IMAGE_SUFFIX);
+                if (fullImage.isFile()) {
+                    if (!currItem.getFullItemExampleImage().equals(UPLOAD_PATH + File.separator + fullImage.getName())) {
+                        FileUtils.copyFile(fullImage, new File(UPLOAD_PATH + File.separator + fullImage.getName()));
+                        currItem.setFullItemExampleImage(UPLOAD_PATH + File.separator + fullImage.getName());
+                    } else {
+                        //路径一致，换个马甲，删除原来的图片
+                        long time = System.currentTimeMillis();
+                        FileUtils.copyFile(fullImage, new File(UPLOAD_PATH + File.separator + time + IMAGE_SUFFIX));
+                        FileUtils.deleteQuietly(fullImage);
+                        currItem.setFullItemExampleImage(UPLOAD_PATH + File.separator + time + IMAGE_SUFFIX);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -212,14 +235,16 @@ public class IHouseServiceImpl implements IHouseService {
                 currCrack.setItemId(currItem.getId());
                 File exampleImage = new File(currCrack.getExampleImage());
                 try {
-                    if (!currCrack.getExampleImage().equals(UPLOAD_PATH + File.separator + exampleImage.getName())) {
-                        FileUtils.copyFile(exampleImage, new File(UPLOAD_PATH + File.separator + exampleImage.getName()));
-                        currCrack.setExampleImage(UPLOAD_PATH + File.separator + exampleImage.getName());
-                    }else {
-                        long time = System.currentTimeMillis();
-                        FileUtils.copyFile(exampleImage, new File(UPLOAD_PATH + File.separator + time + IMAGE_SUFFIX));
-                        FileUtils.deleteQuietly(exampleImage);
-                        currCrack.setExampleImage(UPLOAD_PATH + File.separator + time + IMAGE_SUFFIX);
+                    if (exampleImage.isFile()) {
+                        if (!currCrack.getExampleImage().equals(UPLOAD_PATH + File.separator + exampleImage.getName())) {
+                            FileUtils.copyFile(exampleImage, new File(UPLOAD_PATH + File.separator + exampleImage.getName()));
+                            currCrack.setExampleImage(UPLOAD_PATH + File.separator + exampleImage.getName());
+                        } else {
+                            long time = System.currentTimeMillis();
+                            FileUtils.copyFile(exampleImage, new File(UPLOAD_PATH + File.separator + time + IMAGE_SUFFIX));
+                            FileUtils.deleteQuietly(exampleImage);
+                            currCrack.setExampleImage(UPLOAD_PATH + File.separator + time + IMAGE_SUFFIX);
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

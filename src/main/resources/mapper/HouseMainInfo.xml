@@ -8,7 +8,8 @@
         project_name   projectName,
         house_number   houseNum,
         check_date     checkDate,
-        master_name    masterName
+        master_name    masterName,
+        sign_path      signPath
     </sql>
 
     <select id="selectHouseMainInfoById" resultType="com.houses.common.vo.HouseMainInfoVo"
@@ -50,6 +51,9 @@
             <if test="checkDate != '' and checkDate != null">
                 check_date,
             </if>
+            <if test="signPath != '' and signPath != null">
+                sign_path,
+            </if>
         </trim>
         values
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -67,6 +71,9 @@
             </if>
             <if test="checkDate != '' and checkDate != null">
                 #{checkDate},
+            </if>
+            <if test="signPath != '' and signPath != null">
+                #{signPath},
             </if>
         </trim>
     </insert>

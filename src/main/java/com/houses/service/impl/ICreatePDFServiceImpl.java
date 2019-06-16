@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.alibaba.druid.util.StringUtils;
 import com.houses.common.model.HouseMainInfo;
 import com.houses.common.model.ItemCrack;
 import com.houses.common.vo.HouseItemVo;
@@ -115,8 +116,8 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 			String formatDate = sdf.format(datetime);
 			PdfPCell cell22 = new PdfPCell(new Phrase(formatDate, font));
 			cell22.setHorizontalAlignment(Element.ALIGN_CENTER);
-			PdfPCell cell23 = new PdfPCell(new Phrase("户主姓名", font));
-			PdfPCell cell24 = new PdfPCell(new Phrase(houseMainInfoVo.getMasterName(), font));
+			PdfPCell cell23 = new PdfPCell(new Phrase("", font));
+			PdfPCell cell24 = new PdfPCell(new Phrase("", font));
 			table1.addCell(cell11);
 			table1.addCell(cell12);
 			table1.addCell(cell13);
@@ -142,35 +143,39 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 				
 				//设置图片
 				PdfPCell houseImageCell = setCreakImageList(itemCrackVoList, houseItemVo.getFullItemExampleImage(),i);
-				table3.addCell(houseImageCell);
+				if(houseImageCell != null) {
+					table3.addCell(houseImageCell);
+				}
 				
 				
 				PdfPCell table3Cell = getPdfPTableCell(table3);
-//				table3Cell.setPadding(1);
 				totalTable.addCell(table3Cell);			
 			}
 			
-			int[] table4Width = {30,70};
-			PdfPTable table4 = getPdfPTable(2,table4Width);
-			Image image;
-			try {
-				PdfPCell cell42 = new PdfPCell(new Phrase("签名：", getFont()));
-				cell42.setBorder(Rectangle.NO_BORDER);
-				cell42.setHorizontalAlignment(Element.ALIGN_RIGHT);
-				table4.addCell(cell42);
-				//图片
-				image = Image.getInstance("C:\\Users\\jht\\Pictures\\SpringBoot\\Snipaste_2019-04-29_22-41-50.png");
-				PdfPCell cell41= new PdfPCell(image,true);
-				cell41.setBorder(Rectangle.NO_BORDER);
-				cell41.setHorizontalAlignment(Element.ALIGN_LEFT);
-				table4.addCell(cell41);
-				//图片对应的文字 
-			} catch (BadElementException | IOException e) {
-				e.printStackTrace();
+			if(!StringUtils.isEmpty(houseMainInfoVo.getSignPath())) {
+				
+				int[] table4Width = {30,70};
+				PdfPTable table4 = getPdfPTable(2,table4Width);
+				Image image;
+				try {
+					PdfPCell cell42 = new PdfPCell(new Phrase("签名：", getFont()));
+					cell42.setBorder(Rectangle.NO_BORDER);
+					cell42.setHorizontalAlignment(Element.ALIGN_RIGHT);
+					table4.addCell(cell42);
+					//图片
+					image = Image.getInstance(houseMainInfoVo.getSignPath());
+					PdfPCell cell41= new PdfPCell(image,true);
+					cell41.setBorder(Rectangle.NO_BORDER);
+					cell41.setHorizontalAlignment(Element.ALIGN_LEFT);
+					table4.addCell(cell41);
+					//图片对应的文字 
+				} catch (BadElementException | IOException e) {
+					e.printStackTrace();
+				}
+				PdfPCell table4Cell = getPdfPTableCell(table4);
+				table4Cell.setBorder(Rectangle.NO_BORDER);
+				totalTable.addCell(table4Cell);
 			}
-			PdfPCell table4Cell = getPdfPTableCell(table4);
-			table4Cell.setBorder(Rectangle.NO_BORDER);
-			totalTable.addCell(table4Cell);
 			
 			document.add(totalTable);
 			document.close();
@@ -218,6 +223,10 @@ public class ICreatePDFServiceImpl implements ICreatePDFService {
 		PdfPTable table1 = new PdfPTable(1);
 		Image image;
 		try {
+			File file = new File(imagePath);
+			if(!file.exists()) {
+				return null;
+			}
 			//图片
 			image = Image.getInstance(imagePath);
 			PdfPCell cell1= new PdfPCell(image,true);

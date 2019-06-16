@@ -36,7 +36,7 @@ function initDefauleHouseInfo(data) {
     $("#checkDate").val(formatDate(new Date(data.checkDate)));
     $("#masterName").val(data.masterName);
 
-    //组装构建项
+    //组装构件项
     var content = "";
     if (data.houseItemVoList != null) {
         for (var i = 0; i < data.houseItemVoList.length; i++) {
@@ -147,13 +147,13 @@ function buildItem(item, sort) {
             itemContent += '<div class="layui-col-md10">';
             if (currCrack.crackType == 0) {
                 itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" checked="checked" value="0" >装饰面层';
-                itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" value="1" >构建';
+                itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" value="1" >构件';
             }else if (currCrack.crackType == 1) {
                 itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" value="0" >装饰面层';
-                itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" checked="checked" value="1" >构建';
+                itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" checked="checked" value="1" >构件';
             }else {
                 itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" value="0" >装饰面层';
-                itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" value="1" >构建';
+                itemContent += '<input type="radio" name="crackType' + sort + '' + crackNum + '" value="1" >构件';
             }
             itemContent += '</div>';
             itemContent += '</div>';
@@ -177,8 +177,6 @@ function buildItem(item, sort) {
                 itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum + '" value="0" >龟裂';
                 itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum + '" value="1" >空鼓';
             }
-            itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum + '" value="0" >龟裂';
-            itemContent += '<input type="radio" name="wallDamageType' + sort + '' + crackNum + '" value="1" >空鼓';
             itemContent += '</div>';
             itemContent += '</div>';
 
@@ -349,7 +347,6 @@ function buildSaveData() {
     if ($.trim(projectNmae) == "") {
         alert("工程名称不能为空，请重新输入！");
         return new Object();
-        ``
     }
     obj.projectName = projectNmae;
 
@@ -362,14 +359,13 @@ function buildSaveData() {
         return new Object();
     }
     obj.checkDate = new Date(Date.parse(checkDate.replace(/-/g, "/"))).getTime();
-    ;
 
-    var masterName = $('#masterName').val();
+   /* var masterName = $('#masterName').val();
     if ($.trim(masterName) == "") {
         alert("户主姓名不能为空，请重新输入！");
         return new Object();
     }
-    obj.masterName = masterName;
+    obj.masterName = masterName;*/
 
     var houseNum = $('#houseNum').val();
     if ($.trim(houseNum) == "") {
@@ -549,7 +545,7 @@ layui.use(['form', 'upload'], function () {
         itemContent += '</div>';
         itemContent += '<div class="layui-col-md10">';
         itemContent += '<input type="radio" name="crackType' + sort + '0" value="0" >装饰面层';
-        itemContent += '<input type="radio" name="crackType' + sort + '0" value="1" >构建';
+        itemContent += '<input type="radio" name="crackType' + sort + '0" value="1" >构件';
         itemContent += '</div>';
         itemContent += '</div>';
 
@@ -709,7 +705,7 @@ layui.use(['form', 'upload'], function () {
         itemContent += '</div>';
         itemContent += '<div class="layui-col-md10">';
         itemContent += '<input type="radio" name="crackType' + crackNum + '" value="0" >装饰面层';
-        itemContent += '<input type="radio" name="crackType' + crackNum + '" value="1" >构建';
+        itemContent += '<input type="radio" name="crackType' + crackNum + '" value="1" >构件';
         itemContent += '</div>';
         itemContent += '</div>';
 
