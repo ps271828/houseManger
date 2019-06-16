@@ -1,7 +1,7 @@
 layui.use('table', function(){
     var table = layui.table;
 
-    table.render({
+    var currTable = table.render({
         elem: '#houses'
         ,url:'../houses/queryHouses'
         ,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
@@ -15,9 +15,9 @@ layui.use('table', function(){
         limits:[10,20,50]
         ,cols: [[
             {field:'id', width:'10%', title: 'ID'}
-            ,{field:'projectName', width:'15%', title: '工程名称'}
-            ,{field:'houseNum', width:'15%', title: '房屋编号', sort: true}
-            ,{field:'checkDate', width:'10%', title: '检测日期', templet: function(d){
+            ,{field:'projectName', width:'25%', title: '工程名称'}
+            ,{field:'houseNum', width:'30%', title: '房屋编号'}
+            ,{field:'checkDate', width:'20%', title: '检测日期', templet: function(d){
                     return formatDate(new Date(d.checkDate));
                 }
             },{ width:178, align:'15%', toolbar: '#barDemo'}
@@ -26,7 +26,7 @@ layui.use('table', function(){
 
     table.on('tool(demo)', function(obj){
         var data = obj.data;
-        if(obj.event === 'del'){
+        if(obj.event === 'down'){
             //获取当前网址，如： http://localhost:8083/uimcardprj/share/meun.jsp
             var curWwwPath=window.document.location.href;
             //获取主机地址之后的目次，如： uimcardprj/share/meun.jsp
@@ -35,13 +35,33 @@ layui.use('table', function(){
             //获取主机地址，如： http://localhost:8083
             var localhostPaht=curWwwPath.substring(0,pos);
             window.location.href = localhostPaht + "/houses/downLoadPdf?houseId=" + data.id;
-        } else if(obj.event === 'edit'){
-            layer.prompt({
-                formType: 2
-                ,value: data.email
-            }, function(value, index){
+        } else if(obj.event === 'del'){
+            layer.confirm('确认删除此房屋信息！', {
+                btn: ['确认','取消'] //按钮
+            }, function(){
+                var idArr = [];
+                idArr.push(data.id);
+                $.ajax({
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    url:'../houses/deleteHouseInfoByIds',
+                    type:'post',
+                    data : JSON.stringify(idArr),
+                    success:function(data){
+                        if (data.code == '000000') {
+                            layer.msg(data.data);
+                            currTable.reload();
+                        }else {
+                            layer.msg(data.info);
+                        }
+                    }
+                })
+            }, function(){
+                layer.closeAll();
             });
-        }else if (obj.event == 'detail') {
+        }else if (obj.event == 'edit') {
             var id = data.id + data.checkDate;
                 //标志为false 新增一个tab项
             window.parent.btnTabAdd("../houses/editHouseInfo?houseId=" + data.id, id, "房屋详情");
